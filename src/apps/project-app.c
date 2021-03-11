@@ -3,19 +3,20 @@
 #include "gl.h"
 #include "timer.h"
 #include "uart.h"
-/* Constants required for trig functions */
+
+/* Constants required for trig functions. */
 #define CONST_PI  3.14159265
 #define CONST_2PI 6.28318531
 #define CONST_G 9.81
 #define modd(x, y) ((x) - (int)((x) / (y)) * (y))
 
 /* Constants for setting up screen width, height, etc. */
-const static int SCREEN_WIDTH = 800;
-const static int SCREEN_HEIGHT = 512;
-const static int GROUND_Y = SCREEN_HEIGHT - 50;
+const static int SCREEN_WIDTH = 1400; // set the screen width and height to match your screen size!
+const static int SCREEN_HEIGHT = 900;
+const static int GROUND_Y = SCREEN_HEIGHT - 50; // ground is arbitrarily set to 50 px above bottom of screen
 
 /* 
- * Scale factors set in angry_nerds_graphics_init at beginning of program. 
+ * Scale factors are set in angry_nerds_graphics_init at beginning of program. 
  * These allow for scaling from virtual kinematics world to graphics world. 
  * 
  * x_scale_factor is defined as ratio between screen width and max width bird 
@@ -26,11 +27,12 @@ const static int GROUND_Y = SCREEN_HEIGHT - 50;
 static double x_scale_factor;
 static double y_scale_factor;
 
+const static double velocity_scale_factor = 250.0; // factor to scale the force vector length by to get velocity (TODO: change later, depending on the force value we get)
+
+/* bird_position_t position struct stores the coordinates of bird's current position. */
 static struct bird_position_t {
     int x, y;
 } position;
-
-const double SCALE_FACTOR = 250.0; // factor to scale the force vector length by to get velocity (TODO: change later, depending on the force value we get)
 
 
 /*
@@ -67,7 +69,6 @@ static inline double tan(double x)
     return sin(x)/cos(x);
 }
 
-
 /*
  * Converts radians to degrees.
  */
@@ -79,8 +80,8 @@ static inline double deg_to_rad(int degrees)
 /*
  * Plots the ground at the given ground y-value.
  */
-static inline void gl_plot_ground(void) {
-    gl_draw_rect(0, GROUND_Y, SCREEN_WIDTH, 2, GL_RED);
+static inline void gl_plot_ground(int ground_y_value) {
+    gl_draw_rect(0, ground_y_value, SCREEN_WIDTH, 2, GL_RED);
 }
 
 /*
@@ -93,8 +94,8 @@ void gl_plot_initial_velocity_vector(double force, double angle) {
     gl_draw_rect(45, GROUND_Y - 5, 10, 10, GL_AMBER);
 
     // virtual dx and dy, faithful to the actual angle supplied
-    int dy = (int)((force * SCALE_FACTOR) * sin(angle));
-    int dx = (int)((force * SCALE_FACTOR) * cos(angle));
+    int dy = (int)((force * velocity_scale_factor) * sin(angle));
+    int dx = (int)((force * velocity_scale_factor) * cos(angle));
 
     int dy_scaled = dy * y_scale_factor;
     int dx_scaled = dx * x_scale_factor;
@@ -105,18 +106,12 @@ void gl_plot_initial_velocity_vector(double force, double angle) {
 }
 
 
-int calc_max_height(double force, double angle) {
-    double velocity = force * SCALE_FACTOR;
-    return (int) (velocity * velocity / (4 * CONST_G));
-}
-
-
 void gl_plot_trajectory(double force, double angle) {
     // set position to initial position
     position.x = 50;
     position.y = GROUND_Y;
 
-    double velocity = force * SCALE_FACTOR;
+    double velocity = force * velocity_scale_factor;
 
     // use kinematics trajectory equation:
     //y = h + xtantheta - g/(2v^2cos^2theta)x^2
@@ -136,14 +131,24 @@ void gl_plot_trajectory(double force, double angle) {
     }
 }
 
+
+/*
+ * Given the force and angle the bird is launched from, this helper function 
+ * calculates the maximum height the bird ascends to by kinematic principles.
+ */
+int calc_max_height(double force, double angle) {
+    double velocity = force * velocity_scale_factor;
+    return (int) (velocity * velocity / (2 * CONST_G));
+}
+
 void angry_nerds_graphics_init(void)
 {
     // calculate max height and width the bird can be launched to from kinematic principles.
     // maximum height results from maximum force (1.0) applied at 45 degree angle.
     int max_height = calc_max_height(1.0, deg_to_rad(45));
-    int max_width = 4 * max_height;
+    int max_width = 2 * max_height;
 
-    // set scale factor
+    // set scale factors to scale from kinematics world -> graphical world
     y_scale_factor = (double) GROUND_Y / max_height;
     x_scale_factor = (double) (SCREEN_WIDTH - 50) / max_width;
 }
@@ -155,20 +160,17 @@ void main(void)
 
     // Background is purple
     gl_clear(gl_color(0x55, 0, 0x55));
-    timer_delay(3);
 
     angry_nerds_graphics_init();
 
     // plot ground
-    gl_plot_ground();
-
+    gl_plot_ground(GROUND_Y);
 
     // plot trajectory of bird given angle and force
     gl_plot_trajectory(1.0, deg_to_rad(45));
 
     // plot initial velocity vector given angle and force
     gl_plot_initial_velocity_vector(1.0, deg_to_rad(45));
-
 
     // Show buffer with drawn contents
     gl_swap_buffer();

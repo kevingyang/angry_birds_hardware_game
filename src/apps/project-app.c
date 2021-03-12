@@ -3,12 +3,7 @@
 #include "gl.h"
 #include "timer.h"
 #include "uart.h"
-
-/* Constants required for trig functions. */
-#define CONST_PI  3.14159265
-#define CONST_2PI 6.28318531
-#define CONST_G 9.81
-#define modd(x, y) ((x) - (int)((x) / (y)) * (y))
+#include "trig.h"
 
 /* Constants for setting up screen width, height, etc. */
 const static int SCREEN_WIDTH = 1400; // set the screen width and height to match your screen size!
@@ -33,49 +28,6 @@ const static double velocity_scale_factor = 250.0; // factor to scale the force 
 static struct bird_position_t {
     int x, y;
 } position;
-
-
-/*
- * Simple approximation of cos(x) using a 6th-order Taylor polynomial.
- * Citation: https://web.eecs.utk.edu/~azh/blog/cosine.html
- */
-static inline double cos(double x)
-{
-    x = modd(x, CONST_2PI);
-    char sign = 1;
-    if (x > CONST_PI)
-    {
-        x -= CONST_PI;
-        sign = -1;
-    }
-    double xx = x * x;
-
-    return sign * (1 - ((xx) / (2)) + ((xx * xx) / (24)) - ((xx * xx * xx) / (720)) + ((xx * xx * xx * xx) / (40320)) - ((xx * xx * xx * xx * xx) / (3628800)) + ((xx * xx * xx * xx * xx * xx) / (479001600)));
-}
-
-/*
- * Use sinx = cos(x-pi/2).
- */
-static inline double sin(double x) 
-{
-    return cos(x - CONST_PI/2);
-}
-
-/*
- * Use tanx = sinx/cosx.
- */
-static inline double tan(double x) 
-{
-    return sin(x)/cos(x);
-}
-
-/*
- * Converts radians to degrees.
- */
-static inline double deg_to_rad(int degrees) 
-{
-    return (double)(((double)degrees) * CONST_PI / 180);
-}
 
 /*
  * Plots the ground at the given ground y-value.

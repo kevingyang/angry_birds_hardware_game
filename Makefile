@@ -2,7 +2,7 @@
 # TODO: edit APPLICATION to name of project application from src/apps
 # TODO: edit TEST to name of unit test program from src/tests
 
-MY_MODULES = trig.o
+MY_MODULES = trig.o julie_image.o
 
 # Targets for this makefile
 APPLICATION = build/project-app.bin

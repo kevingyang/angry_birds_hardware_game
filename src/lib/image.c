@@ -31,7 +31,8 @@ size_t get_image_size(void) {
     return get_image_width() * get_image_height() * 4; 
 }
 
-/* Extract glyph pixels for requested character from font bitmap.
+/* 
+ * Extract glyph pixels for requested character from font bitmap.
  * Read bits from font bitmap and store into array of bytes, one byte per pixel.
  * Use 0xff byte for on pixel, 0x0 for off pixel.
  */
@@ -57,7 +58,7 @@ void get_image_to_draw(unsigned int buf[], size_t buflen, char first_initial) {
         image_ptr = &liana;
         break; /* optional */
     default : 
-        printf("TA name not found. Make sure you type only their first name, with no caps.");
+        printf("Name not found. Make sure you type only their first name, with no caps.");
     }
     int index = 0;
     int nbits_in_row = get_image_width() * 4;
@@ -71,6 +72,7 @@ void get_image_to_draw(unsigned int buf[], size_t buflen, char first_initial) {
     }
 
 }
+
 static person_image_t liana = {
     .image_width = 100, .image_height = 100,
     .pixel_data = {

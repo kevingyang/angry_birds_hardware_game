@@ -20,7 +20,7 @@ void gl_plot_ground(int ground_y_value) {
  * and 1 (100% force))
  * Plots the initial velocity vector from a point on the ground.
  */
-void gl_plot_initial_velocity_vector(double force, double angle) {
+void gl_plot_initial_velocity_vector(double force, double angle, color_t color) {
     // plot initial position
     gl_draw_rect(45, GROUND_Y - 5, 10, 10, GL_AMBER);
 
@@ -32,12 +32,12 @@ void gl_plot_initial_velocity_vector(double force, double angle) {
     int dx_scaled = dx * x_scale_factor;
 
     // plot line for initial velocity vector
-    gl_draw_line(50, GROUND_Y, 50 + dx_scaled, GROUND_Y - dy_scaled, GL_BLACK);
+    gl_draw_line(50, GROUND_Y, 50 + dx_scaled, GROUND_Y - dy_scaled, color);
 
 }
 
 
-void gl_plot_trajectory(double force, double angle) {
+void gl_plot_trajectory(double force, double angle, color_t color) {
     // set position to initial position
     position.x = 50;
     position.y = GROUND_Y;
@@ -55,7 +55,33 @@ void gl_plot_trajectory(double force, double angle) {
         // convert virtual y to actual y position and store in position.y
         position.y = GROUND_Y - virtual_y*y_scale_factor;
 
-        gl_draw_pixel(position.x, position.y, GL_AMBER);
+        gl_draw_pixel(position.x, position.y, color);
+        // printf("virtual x: %d, virtual y: %d, actual x: %d, actual y: %d\n", virtual_x, virtual_y, position.x, position.y);
+
+        position.x++; // increment to next x-value
+    }
+}
+
+
+void gl_plot_image_trajectory(double force, double angle, color_t color) {
+    // set position to initial position
+    position.x = 50;
+    position.y = GROUND_Y;
+
+    double velocity = force * velocity_scale_factor;
+
+    // use kinematics trajectory equation:
+    //y = h + xtantheta - g/(2v^2cos^2theta)x^2
+    while(position.x < SCREEN_WIDTH && position.y >= 0) {
+        // virtual x and virtual y represent the actual values of x and y generated from the kinematics trajectory equation
+        int virtual_x = (position.x - 50) / x_scale_factor;
+        int virtual_y = (int) ((virtual_x * tan(angle) - CONST_G/(2 * velocity *velocity * cos(angle) * cos(angle)) * virtual_x * virtual_x)); // determine virtual y-position
+
+        // actual x position is already stored in position.x
+        // convert virtual y to actual y position and store in position.y
+        position.y = GROUND_Y - virtual_y*y_scale_factor;
+
+        gl_draw_pixel(position.x, position.y, color);
         // printf("virtual x: %d, virtual y: %d, actual x: %d, actual y: %d\n", virtual_x, virtual_y, position.x, position.y);
 
         position.x++; // increment to next x-value
@@ -73,16 +99,18 @@ int calc_max_height(double force, double angle) {
 
 void angry_nerds_graphics_init(void)
 {
+    // 1. Set initial screen parameters.
     SCREEN_WIDTH = 1400;
     SCREEN_HEIGHT = 900;
     GROUND_Y = SCREEN_HEIGHT - 50;
-    velocity_scale_factor = 250.0;
-    // calculate max height and width the bird can be launched to from kinematic principles.
+    velocity_scale_factor = 250.0; // (TODO: change later, depending on the force value we get)
+    
+    // 2. Calculate max height and width the bird can be launched to from kinematic principles.
     // maximum height results from maximum force (1.0) applied at 45 degree angle.
     int max_height = calc_max_height(1.0, deg_to_rad(45));
     int max_width = 2 * max_height;
 
-    // set scale factors to scale from kinematics world -> graphical world
+    // 3. Set scale factors to scale from kinematics world -> graphical world
     y_scale_factor = (double) GROUND_Y / max_height;
     x_scale_factor = (double) (SCREEN_WIDTH - 50) / max_width;
 }
@@ -116,15 +144,14 @@ void main (void)
     // Background is purple
     gl_clear(gl_color(0x55, 0, 0x55));
 
-
     // plot ground
     gl_plot_ground(GROUND_Y);
 
     // plot trajectory of bird given angle and force
-    gl_plot_trajectory(1.0, deg_to_rad(45));
+    gl_plot_trajectory(1.0, deg_to_rad(45), GL_AMBER);
 
     // plot initial velocity vector given angle and force
-    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45));
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45), GL_BLACK);
 
     gl_draw_image(0, 0, 'j');
     gl_draw_image(0, 100, 'p');

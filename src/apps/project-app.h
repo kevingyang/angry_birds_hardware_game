@@ -27,8 +27,8 @@ struct bird_position_t {
 
 
 void gl_plot_ground(int ground_y_value);
-void gl_plot_initial_velocity_vector(double force, double angle);
-void gl_plot_trajectory(double force, double angle);
+void gl_plot_initial_velocity_vector(double force, double angle, color_t color);
+void gl_plot_trajectory(double force, double angle, color_t color);
 int calc_max_height(double force, double angle);
 void gl_draw_image(unsigned int x, unsigned int y, char first_initial);
 void angry_nerds_graphics_init(void);

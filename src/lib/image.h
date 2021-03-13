@@ -15,7 +15,6 @@ size_t get_image_height(void);
 size_t get_image_width(void);
 
 /*
-/*
  * Get the total number of bytes needed to store an image, in pixels.
  * This is equal to height * (width * 4), as each image has width * 4
  * bits in a row.

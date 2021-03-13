@@ -2,7 +2,7 @@
 # TODO: edit APPLICATION to name of project application from src/apps
 # TODO: edit TEST to name of unit test program from src/tests
 
-MY_MODULES = trig.o image.o
+MY_MODULES = trig.o image.o project-app.o
 
 # Targets for this makefile
 APPLICATION = build/project-app.bin
@@ -20,7 +20,7 @@ export warn = -Wall -Wpointer-arith -Wwrite-strings -Werror \
 export freestanding = -ffreestanding -nostdinc \
 		-isystem $(shell arm-none-eabi-gcc -print-file-name=include)
 CFLAGS	= -I$(CS107E)/include 
-CFLAGS += -Isrc/lib -Og -g -std=c99 $$warn $$freestanding 
+CFLAGS += -Isrc/lib -Isrc/tests -Isrc/apps -Og -g -std=c99 $$warn $$freestanding 
 
 CFLAGS += -mapcs-frame -fno-omit-frame-pointer -mpoke-function-name
 LDFLAGS	= -nostdlib -T src/boot/memmap -L$(CS107E)/lib

@@ -4,7 +4,7 @@
 #include "timer.h"
 #include "uart.h"
 #include "trig.h"
-#include "julie_image.h"
+#include "image.h"
 
 /* Constants for setting up screen width, height, etc. */
 const static int SCREEN_WIDTH = 1400; // set the screen width and height to match your screen size!
@@ -106,15 +106,18 @@ void angry_nerds_graphics_init(void)
 }
 
 
-void gl_draw_image(unsigned int x, unsigned int y)
+/*
+ * Given the force and angle the bird is launched from, this helper function 
+ * calculates the maximum height the bird ascends to by kinematic principles.
+ */
+void gl_draw_image(unsigned int x, unsigned int y, char first_initial)
 {
     unsigned int buf[get_image_size()];
-    get_pixels_to_draw(buf, sizeof(buf));
+    get_image_to_draw(buf, sizeof(buf), first_initial);
     unsigned int (*img)[get_image_width()] = (unsigned int (*)[get_image_width()]) buf; 
 
     for (int j = y; j < get_image_height() + y; j++) {
         for (int i = x; i < get_image_width() + x; i++) {
-            // printf("%x\n", img[j - y][i - x]);
             gl_draw_pixel(i, j, img[j - y][i - x]);
         }
     }
@@ -140,9 +143,12 @@ void main(void)
     // plot initial velocity vector given angle and force
     gl_plot_initial_velocity_vector(1.0, deg_to_rad(45));
 
-    gl_draw_image(0,0);
-    // unsigned int buf[get_image_size()];
-    // get_pixels_to_draw(buf, get_image_size());
+    gl_draw_image(0, 0, 'j');
+    gl_draw_image(0, 100, 'p');
+    gl_draw_image(0, 200, 's');
+    gl_draw_image(0, 300, 'e');
+    gl_draw_image(0, 400, 'a');
+    gl_draw_image(0, 500, 'l');
 
     // Show buffer with drawn contents
     gl_swap_buffer();

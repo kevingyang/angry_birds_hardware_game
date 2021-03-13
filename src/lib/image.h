@@ -1,5 +1,5 @@
-#ifndef FONT_H
-#define FONT_H
+#ifndef IMAGE_H
+#define IMAGEH
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -42,6 +42,6 @@ size_t get_image_size(void);
  *              Failure is when `ch` is not available in this font or `buflen`
  *              does not equal the value returned by font_get_glyph_size()
  */
-void get_pixels_to_draw(unsigned int buf[], size_t buflen);
+void get_image_to_draw(unsigned int buf[], size_t buflen, char first_initial);
 
-#endif
+#endif // IMAGE_H

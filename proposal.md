@@ -1,7 +1,7 @@
 ## Project title
 
 ## Team members
-Kevin G Yang    James Zheng
+Kevin G Yang    James Zheng    Selena Sun
 
 ## Project description
 Short description of the basic idea and end goal you are aiming for. 

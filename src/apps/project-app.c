@@ -137,15 +137,16 @@ void gl_draw_image(unsigned int x, unsigned int y, char first_initial)
 /* 
  * Generate randomly-located target to the right of a given vertical line
  */ 
-#define TARGETSIZE 20
-void gl_draw_target(unsigned int bound)
+void gl_draw_target(unsigned int leftBound, unsigned int size)
 {
     // generate x-coordinate
-    unsigned int x = random_getNumber(SCREEN_WIDTH - TARGETSIZE, bound); 
+    unsigned int x = random_getNumber(SCREEN_WIDTH - size, leftBound); 
     // generate y-coordinate
-    unsigned int y = random_getNumber(GROUND_Y - TARGETSIZE, 0);
+    unsigned int y = random_getNumber(GROUND_Y - size, 0);
     // plot target
-    gl_draw_rect(x, y, TARGETSIZE, TARGETSIZE, GL_WHITE);
+    gl_draw_rect(x, y, size, size, GL_WHITE);
+    // store target in array
+
 }
 
 
@@ -178,7 +179,7 @@ void main (void)
 
     // plot target
     for (int i = 0; i < 25; i++) {
-        gl_draw_target(SCREEN_WIDTH / 2);
+        gl_draw_target(SCREEN_WIDTH / 2, 20);
     }
 
     // Show buffer with drawn contents

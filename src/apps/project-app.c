@@ -44,60 +44,60 @@ void gl_plot_initial_velocity_vector(double force, double angle, color_t color) 
 
 void gl_plot_trajectory(double force, double angle, color_t color) {
     // set position to initial position
-    position.x = 50;
-    position.y = GROUND_Y;
+    bird_position.x = 50;
+    bird_position.y = GROUND_Y;
 
     double velocity = force * velocity_scale_factor;
 
     // use kinematics trajectory equation:
     //y = h + xtantheta - g/(2v^2cos^2theta)x^2
-    while(position.x < SCREEN_WIDTH && position.y >= 0) {
+    while(bird_position.x < SCREEN_WIDTH && bird_position.y >= 0) {
         // virtual x and virtual y represent the actual values of x and y generated from the kinematics trajectory equation
-        int virtual_x = (position.x - 50) / x_scale_factor;
+        int virtual_x = (bird_position.x - 50) / x_scale_factor;
         int virtual_y = (int) ((virtual_x * tan(angle) - CONST_G/(2 * velocity *velocity * cos(angle) * cos(angle)) * virtual_x * virtual_x)); // determine virtual y-position
 
-        // actual x position is already stored in position.x
-        // convert virtual y to actual y position and store in position.y
-        position.y = GROUND_Y - virtual_y*y_scale_factor;
+        // actual x position is already stored in bird_position.x
+        // convert virtual y to actual y position and store in bird_position.y
+        bird_position.y = GROUND_Y - virtual_y*y_scale_factor;
 
-        gl_draw_pixel(position.x, position.y, color);
+        gl_draw_pixel(bird_position.x, bird_position.y, color);
         // printf("virtual x: %d, virtual y: %d, actual x: %d, actual y: %d\n", virtual_x, virtual_y, position.x, position.y);
 
-        position.x++; // increment to next x-value
+        bird_position.x++; // increment to next x-value
     }
 }
 
 
 void gl_plot_image_trajectory(double force, double angle, char first_initial) {
     // set position to initial position
-    position.x = 50;
+    bird_position.x = 50;
 
     double velocity = force * velocity_scale_factor;
 
-    struct bird_position_t previous_position;
+    struct position_t previous_position;
 
     /* 
      * To calculate trajectory, use kinematics projectile motion equation below:
      * y = h + xtantheta - g/(2v^2cos^2theta)x^2
      */
-    while(position.x < SCREEN_WIDTH && position.y >= 0) {
+    while(bird_position.x < SCREEN_WIDTH && bird_position.y >= 0) {
 
         // virtual x and virtual y represent the actual values of x and y generated from the kinematics trajectory equation
-        int virtual_x = (position.x - 50) / x_scale_factor;
+        int virtual_x = (bird_position.x - 50) / x_scale_factor;
         int virtual_y = (int) ((virtual_x * tan(angle) - CONST_G/(2 * velocity *velocity * cos(angle) * cos(angle)) * virtual_x * virtual_x)); // determine virtual y-position
 
         // actual x position is already stored in position.x
         // convert virtual y to actual y position and store in position.y
         // must scale y-position by image's height
-        position.y = GROUND_Y - get_image_height() - virtual_y*y_scale_factor;
+        bird_position.y = GROUND_Y - get_image_height() - virtual_y*y_scale_factor;
 
-        gl_draw_image(position.x, position.y, first_initial); // draw next
+        gl_draw_image(bird_position.x, bird_position.y, first_initial); // draw next
 
         /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
         // timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
 
         // after the first iteration, we must remove the projectile at the previous position
-        if(position.x != 50) {
+        if(bird_position.x != 50) {
             gl_draw_rect(previous_position.x, previous_position.y, get_image_width(), get_image_height(), GL_BLACK);
             gl_swap_buffer(); 
             gl_draw_rect(previous_position.x, previous_position.y, get_image_width(), get_image_height(), GL_BLACK);
@@ -107,10 +107,10 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
         gl_swap_buffer();
 
         // store previous position so we can remove it 
-        previous_position.x = position.x;
-        previous_position.y = position.y;
+        previous_position.x = bird_position.x;
+        previous_position.y = bird_position.y;
 
-        position.x += 100; // increment to next x-value
+        bird_position.x += 100; // increment to next x-value
     }
 }
 
@@ -170,8 +170,9 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     unsigned int y = random_getNumber(GROUND_Y - size, 0);
     // plot target
     gl_draw_rect(x, y, size, size, GL_WHITE);
-    // store target in array
-
+    // store target
+    target_position.x = x;
+    target_position.y = y;
 }
 
 

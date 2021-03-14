@@ -1,16 +1,18 @@
 #ifndef PROJECT_APP_H
 #define PROJECT_APP_H
 
-/* bird_position_t position struct stores the coordinates of bird's current position. */
 struct position_t {
     int x, y;
-} position;
+};
+
+/* position_t position struct stores the coordinates of bird's current position. */
+struct position_t bird_position;
+struct position_t target_position;
 
 /* Constants for setting up screen width, height, etc. */
 int SCREEN_WIDTH; // set the screen width and height to match your screen size!
 int SCREEN_HEIGHT;
 int GROUND_Y; // ground is arbitrarily set to 50 px above bottom of screen
-position_t TARGETS[5];
 
 /* 
  * Scale factors are set in angry_nerds_graphics_init at beginning of program. 

@@ -38,21 +38,55 @@ void test_draw_images (void) {
 
 }
 
-// void main(void)
-// {
-//     uart_init();
-//     angry_nerds_graphics_init();
-//     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
-//     gl_plot_ground(GROUND_Y);
+void test_plot_image_trajectory(void) {
+    // throw julie at 60 degrees
+    gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
 
-//     /* TESTS BELOW */
-//     test_draw_images();
-//     test_trajectory_different_angles();
-//     test_trajectory_different_forces();
-//     /* TESTS ABOVE */
+    // plot trajectory of bird given angle and force
+    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
+    gl_swap_buffer();
 
-//     // Final step: buffer with drawn contents
-//     gl_swap_buffer();
+    // plot initial velocity vector given angle and force
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
+    gl_swap_buffer();
 
-//     uart_putchar(EOT);
-// }
+    // throw pat at 45 degrees
+    gl_plot_image_trajectory(1.0, deg_to_rad(45), 'p');
+
+    // plot trajectory of bird given angle and force
+    gl_plot_trajectory(1.0, deg_to_rad(45), GL_AMBER);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_plot_trajectory(1.0, deg_to_rad(45), GL_AMBER);
+    gl_swap_buffer();
+
+    // plot initial velocity vector given angle and force
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45), GL_BLACK);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45), GL_BLACK);
+    gl_swap_buffer();
+
+}
+
+void main(void)
+{
+    uart_init();
+    angry_nerds_graphics_init();
+    gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
+    gl_plot_ground(GROUND_Y);
+
+    /* TESTS BELOW */
+    test_draw_images();
+    test_trajectory_different_angles();
+    test_trajectory_different_forces();
+    test_plot_image_trajectory();
+    /* TESTS ABOVE */
+
+    // Final step: buffer with drawn contents
+    gl_swap_buffer();
+
+    uart_putchar(EOT);
+}

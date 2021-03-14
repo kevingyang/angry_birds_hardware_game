@@ -93,7 +93,8 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
 
         gl_draw_image(position.x, position.y, first_initial); // draw next
 
-        timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
+        /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
+        // timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
 
         // after the first iteration, we must remove the projectile at the previous position
         if(position.x != 50) {
@@ -187,27 +188,21 @@ void main (void)
     // plot ground on both framebuffers
     gl_plot_ground(GROUND_Y);
 
+    // throw julie at 60 degrees
+    gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
+
     // plot trajectory of bird given angle and force
-    gl_plot_trajectory(1.0, deg_to_rad(45), GL_AMBER);
+    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
     gl_swap_buffer(); // plot on both framebuffers
-    gl_plot_trajectory(1.0, deg_to_rad(45), GL_AMBER);
+    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
     gl_swap_buffer();
 
     // plot initial velocity vector given angle and force
-    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45), GL_BLACK);
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
     gl_swap_buffer(); // plot on both framebuffers
-    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45), GL_BLACK);
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
     gl_swap_buffer();
 
-    gl_plot_image_trajectory(1.0, deg_to_rad(45), 'j');
-
-
-    // gl_draw_image(0, 0, 'j');
-    // gl_draw_image(0, 100, 'p');
-    // gl_draw_image(0, 200, 's');
-    // gl_draw_image(0, 300, 'e');
-    // gl_draw_image(0, 400, 'a');
-    // gl_draw_image(0, 500, 'l');
 
     // plot target
     for (int i = 0; i < 25; i++) {

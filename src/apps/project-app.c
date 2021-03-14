@@ -10,10 +10,14 @@
 
 
 /*
- * Plots the ground at the given ground y-value.
+ * Plots the ground at the given ground y-value on both buffers.
  */
 void gl_plot_ground(int ground_y_value) {
     gl_draw_rect(0, ground_y_value, SCREEN_WIDTH, 2, GL_RED);
+    gl_swap_buffer();
+    gl_draw_rect(0, ground_y_value, SCREEN_WIDTH, 2, GL_RED);
+    gl_swap_buffer();
+
 }
 
 /*
@@ -64,28 +68,49 @@ void gl_plot_trajectory(double force, double angle, color_t color) {
 }
 
 
-void gl_plot_image_trajectory(double force, double angle, color_t color) {
+void gl_plot_image_trajectory(double force, double angle, char first_initial) {
     // set position to initial position
     position.x = 50;
-    position.y = GROUND_Y;
 
     double velocity = force * velocity_scale_factor;
 
-    // use kinematics trajectory equation:
-    //y = h + xtantheta - g/(2v^2cos^2theta)x^2
+    struct bird_position_t previous_position;
+
+    /* 
+     * To calculate trajectory, use kinematics projectile motion equation below:
+     * y = h + xtantheta - g/(2v^2cos^2theta)x^2
+     */
     while(position.x < SCREEN_WIDTH && position.y >= 0) {
+
         // virtual x and virtual y represent the actual values of x and y generated from the kinematics trajectory equation
         int virtual_x = (position.x - 50) / x_scale_factor;
         int virtual_y = (int) ((virtual_x * tan(angle) - CONST_G/(2 * velocity *velocity * cos(angle) * cos(angle)) * virtual_x * virtual_x)); // determine virtual y-position
 
         // actual x position is already stored in position.x
         // convert virtual y to actual y position and store in position.y
-        position.y = GROUND_Y - virtual_y*y_scale_factor;
+        // must scale y-position by image's height
+        position.y = GROUND_Y - get_image_height() - virtual_y*y_scale_factor;
 
-        gl_draw_pixel(position.x, position.y, color);
-        // printf("virtual x: %d, virtual y: %d, actual x: %d, actual y: %d\n", virtual_x, virtual_y, position.x, position.y);
+        gl_draw_image(position.x, position.y, first_initial); // draw next
 
-        position.x++; // increment to next x-value
+        /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
+        // timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
+
+        // after the first iteration, we must remove the projectile at the previous position
+        if(position.x != 50) {
+            gl_draw_rect(previous_position.x, previous_position.y, get_image_width(), get_image_height(), GL_BLACK);
+            gl_swap_buffer(); 
+            gl_draw_rect(previous_position.x, previous_position.y, get_image_width(), get_image_height(), GL_BLACK);
+            gl_swap_buffer(); // swap back to current fb
+        }
+
+        gl_swap_buffer();
+
+        // store previous position so we can remove it 
+        previous_position.x = position.x;
+        previous_position.y = position.y;
+
+        position.x += 100; // increment to next x-value
     }
 }
 
@@ -118,8 +143,8 @@ void angry_nerds_graphics_init(void)
 
 
 /*
- * Given the force and angle the bird is launched from, this helper function 
- * calculates the maximum height the bird ascends to by kinematic principles.
+ * This function draws the image of a staff member given their first initial
+ * at the given (x,y) coordinates.
  */
 void gl_draw_image(unsigned int x, unsigned int y, char first_initial)
 {
@@ -158,24 +183,27 @@ void main (void)
     angry_nerds_graphics_init();
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
 
-    // Background is purple
-    gl_clear(gl_color(0x55, 0, 0x55));
+    // Set background color
+    gl_clear(GL_BLACK);
 
-    // plot ground
+    // plot ground on both framebuffers
     gl_plot_ground(GROUND_Y);
 
+    // throw julie at 60 degrees
+    gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
+
     // plot trajectory of bird given angle and force
-    gl_plot_trajectory(1.0, deg_to_rad(45), GL_AMBER);
+    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
+    gl_swap_buffer();
 
     // plot initial velocity vector given angle and force
-    gl_plot_initial_velocity_vector(1.0, deg_to_rad(45), GL_BLACK);
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
+    gl_swap_buffer();
 
-    gl_draw_image(0, 0, 'j');
-    gl_draw_image(0, 100, 'p');
-    gl_draw_image(0, 200, 's');
-    gl_draw_image(0, 300, 'e');
-    gl_draw_image(0, 400, 'a');
-    gl_draw_image(0, 500, 'l');
 
     // plot target
     for (int i = 0; i < 25; i++) {

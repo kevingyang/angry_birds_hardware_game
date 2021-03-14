@@ -1,26 +1,44 @@
-# selenasun1618-jameszheng405-kyang8093-project
-=======
-## Project title
+MinIMU-9 v3 Gyro, Accelerometer, and Compass (L3GD20H and LSM303D Carrier)
+https://www.pololu.com/product/2468
 
-## Team members
+A minimum of four connections are necessary to use the MinIMU-9:
+VIN, GND, SCL, and SDA. 
+- SDA is GPIO_PIN2
+- SCL is GPIO_PIN3
 
-## Project description
+VIN should be connected to a 2.5 V to 5.5 V source GND to 0 volts,
 
-## Member contribution
-A short description of the work performed by each member of the team.
+SCL and SDA should be connected to an I²C bus operating at the same
+logic level as VIN.
 
-## References
-Cite any references/resources that inspired/influenced your project. 
-If your submission incorporates external contributions such as adopting 
-someone else's code or circuit into your project, be sure to clearly 
-delineate what portion of the work was derivative and what portion is 
-your original work.
+(Alternatively, if you are using the board with a 3.3 V system, you
+can leave VIN disconnected and bypass the built-in regulator by
+connecting 3.3 V directly to VDD.)
 
-## Self-evaluation
-How well was your team able to execute on the plan in your proposal?  
-Any trying or heroic moments you would like to share? Of what are you particularly proud: the effort you put into it? the end product? 
-the process you followed? what you learned along the way? Tell us about it!
+---- Dawson's notes ----
 
-## Photos
-You are encouraged to submit photos/videos of your project in action. 
-Add the files and commit to your project repository to include along with your submission.
+images/gpio.jpg
+
+pin layout:
+	images/lsm-pins.jpg
+
+package:
+	images/package.jpg
+	~/class/master.2016.spr/staff/libpi/tests/i2c_tests
+
+where do we go?
+	p23
+what are 
+	CTRL9_XL
+	CTRL_1_XL
+	CTRL_10_C
+	CTRL2_G
+
+	p8.
+
+	what are the units?
+	what are the rest of these names?
+
+
+where do we get the scale?
+	[pulled from arduino code from manufacturer's site.]

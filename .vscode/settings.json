@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "assert.h": "c",
+        "project-app.h": "c",
+        "trig.h": "c",
+        "julie_image.h": "c",
+        "stddef.h": "c",
+        "randomhardware.h": "c"
+    }
+}

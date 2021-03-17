@@ -7,6 +7,7 @@
 #include "project-app.h"
 #include "trig.h"
 #include "image.h"
+#include "randomHardware.h"
 
 void test_trajectory_different_forces (void) {
     for(int i = 1; i <= 10; i++) {
@@ -77,7 +78,6 @@ void test_gl_draw_target(void) {
     for (int i = 0; i < 20; i++) {
         gl_draw_target(SCREEN_WIDTH / 2, 20);
     }
-    gl_swap_buffer();
 }
 
 void test_force_sensor(void) {
@@ -95,6 +95,7 @@ void main(void)
     angry_nerds_graphics_init();
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
     gl_plot_ground(GROUND_Y);
+    random_init();
 
     /* TESTS BELOW */
     test_draw_images();
@@ -102,7 +103,7 @@ void main(void)
     test_trajectory_different_forces();
     test_plot_image_trajectory();
     test_gl_draw_target();
-    test_force_sensor();
+//    test_force_sensor();
     /* TESTS ABOVE */
 
     // Final step: buffer with drawn contents

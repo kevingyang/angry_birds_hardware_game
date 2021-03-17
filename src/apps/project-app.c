@@ -6,7 +6,8 @@
 #include "trig.h"
 #include "image.h"
 #include "project-app.h"
-#include "randomHardware.h"
+#include "keyboard.h"
+#include "randomHardware.h" // for random function
 
 
 /*
@@ -94,7 +95,7 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
         gl_draw_image(bird_position.x, bird_position.y, first_initial); // draw next
 
         /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
-        // timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
+        timer_delay_ms(100); // delay 0.1 second before removing and going to next iteration of loop
 
         // after the first iteration, we must remove the projectile at the previous position
         if(bird_position.x != 50) {
@@ -170,9 +171,62 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     unsigned int y = random_getNumber(GROUND_Y - size, 0);
     // plot target
     gl_draw_rect(x, y, size, size, GL_WHITE);
-    // store target
+    // store target position and size
     target_position.x = x;
     target_position.y = y;
+    TARGET_SIZE = size;
+}
+
+
+void angry_nerds_game_init(void) {
+    angry_nerds_graphics_init();
+    gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
+
+    // Set background color
+    gl_clear(GL_BLACK);
+    gl_draw_string(50, SCREEN_HEIGHT/2, "Welcome to Angry Nerds!", GL_WHITE);
+    gl_draw_string(50, SCREEN_HEIGHT/2 + 2*gl_get_char_height(), "Choose difficulty level by pressing a key on the RPi keyboard:", GL_WHITE);
+
+    gl_draw_string(50, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(1) Easy", GL_GREEN);
+    gl_draw_string(350, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(2) Medium", GL_BLUE);
+    gl_draw_string(650, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(3) Hard", GL_RED);
+    gl_draw_string(950, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(4) EXPERT", GL_YELLOW);
+
+    gl_swap_buffer();
+
+    // Read keyboard scancodes to select game difficulty
+    while(1) {
+        unsigned char key = keyboard_read_next();
+        printf("\nRead: %c\n", key);
+
+        switch(key) {
+            case '1' :
+                printf("Difficulty selected: Easy");
+                angry_nerds_game_start(1);
+                break;
+            case '2' :
+                printf("Difficulty selected: Medium");
+                angry_nerds_game_start(2);
+                break;
+            case '3' :
+                printf("Difficulty selected: Hard");
+                angry_nerds_game_start(3);
+                break;
+            case '4' :
+                printf("Difficulty selected: EXPERT");
+                angry_nerds_game_start(4);
+                break;
+            default :
+                printf("Select a difficulty by pressing 1, 2, 3, or 4!");
+        }
+
+    }
+
+}
+
+void angry_nerds_game_start(unsigned int difficulty) {
+    // 
+
 }
 
 
@@ -180,39 +234,39 @@ void main (void)
 {
     uart_init();
     random_init();
+    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
 
-    angry_nerds_graphics_init();
-    gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
+    angry_nerds_game_init();
 
-    // Set background color
-    gl_clear(GL_BLACK);
+    // angry_nerds_graphics_init();
+    // gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
 
-    // plot ground on both framebuffers
-    gl_plot_ground(GROUND_Y);
+    // // Set background color
+    // gl_clear(GL_BLACK);
 
-    // throw julie at 60 degrees
-    gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
+    // // plot ground on both framebuffers
+    // gl_plot_ground(GROUND_Y);
 
-    // plot trajectory of bird given angle and force
-    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
-    gl_swap_buffer(); // plot on both framebuffers
-    gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
-    gl_swap_buffer();
+    // // throw julie at 60 degrees
+    // gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
 
-    // plot initial velocity vector given angle and force
-    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
-    gl_swap_buffer(); // plot on both framebuffers
-    gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
-    gl_swap_buffer();
+    // // plot trajectory of bird given angle and force
+    // gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
+    // gl_swap_buffer(); // plot on both framebuffers
+    // gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
+    // gl_swap_buffer();
+
+    // // plot initial velocity vector given angle and force
+    // gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
+    // gl_swap_buffer(); // plot on both framebuffers
+    // gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
+    // gl_swap_buffer();
 
 
-    // plot target
-    for (int i = 0; i < 25; i++) {
-        gl_draw_target(SCREEN_WIDTH / 2, 20);
-    }
+    // gl_draw_target(SCREEN_WIDTH / 2, 100);
 
-    // Show buffer with drawn contents
-    gl_swap_buffer();
+    // // Show buffer with drawn contents
+    // gl_swap_buffer();
 
     uart_putchar(EOT);
 }

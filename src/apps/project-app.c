@@ -224,8 +224,91 @@ void angry_nerds_game_init(void) {
 
 }
 
+/*
+ * Display countdown on-screen from time to 0.
+ * This function is only defined for times between 0 and 9. 
+ */
+void display_countdown(unsigned char time) {
+    for(int i = time; i >= 0; i--) {
+        char time_char = i + '0';
+        gl_draw_char(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, time_char, GL_RED); // display the time
+        if(i == 0) {
+            gl_draw_string(SCREEN_WIDTH/2 - 2 * gl_get_char_width(), SCREEN_HEIGHT/2 + gl_get_char_height(), "Fire!", GL_GREEN); // display "Fire!" prompt for 1 second
+        } 
+        timer_delay_ms(1000); 
+        gl_swap_buffer();
+
+        gl_draw_rect(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, gl_get_char_width(), gl_get_char_height(), GL_BLACK); // clear char
+
+    }
+}
+
+/* Helper function to display game instructions at top of screen on both framebuffers */
+void angry_nerds_game_display_instructions(void) {
+    gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
+    gl_draw_string(0, gl_get_char_height(), "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
+    gl_draw_string(0, 2*gl_get_char_height(), "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_swap_buffer();
+    gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
+    gl_draw_string(0, gl_get_char_height(), "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
+    gl_draw_string(0, 2*gl_get_char_height(), "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_swap_buffer();
+}
+
+// TODO: Replace with real read_angle function @Selena
+double TEMP_READ_ANGLE(void) {
+    // return some value between 0 and pi/2
+    return deg_to_rad(60);
+}
+
+// TODO: Replace with real read_force function @James
+double TEMP_READ_FORCE(void) {
+    // return some value between 0 and 1
+    return 0.75;
+}
+
+/* 
+ * angry_nerds_game_start() is called after the game is initialized and the 
+ * difficulty is selected, with param @difficulty between 1-4 (1 = easiest, 4 =
+ * hardest).
+ * 
+ * 
+ */
 void angry_nerds_game_start(unsigned int difficulty) {
-    // 
+    // clear screen
+    gl_swap_buffer();
+    gl_clear(GL_BLACK);
+    gl_swap_buffer();
+    angry_nerds_game_display_instructions(); // show basic text-based game tutorial
+
+    display_countdown(5); // display the countdown
+
+    // while game is running, start a new round of the game:
+    for(int i = 0; i < 10; i++) {
+        // clear screen
+        gl_clear(GL_BLACK);
+        gl_swap_buffer();
+        gl_clear(GL_BLACK);
+        gl_swap_buffer();
+
+        // for each round of the game, start 5 second countdown on screen
+        display_countdown(5); // display the countdown
+
+        // at end of 5 second countdown, call read_accel and read_force
+        double force = TEMP_READ_FORCE();
+        double angle = TEMP_READ_ANGLE();
+
+        // plot ground on both framebuffers
+        gl_plot_ground(GROUND_Y);
+
+        // plot trajectory after reading force and angle 
+        gl_plot_image_trajectory(force, angle, 'j');
+
+        // wait for "x" key to exit
+
+    }
+
+
 
 }
 

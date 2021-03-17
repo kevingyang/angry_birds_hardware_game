@@ -1,6 +1,7 @@
 #include "assert.h"
 #include "printf.h"
 #include "gl.h"
+#include "gpio.h"
 #include "timer.h"
 #include "uart.h"
 #include "project-app.h"
@@ -71,6 +72,23 @@ void test_plot_image_trajectory(void) {
 
 }
 
+void test_gl_draw_target(void) {
+    // 20 size-20 targets,  right half of screen
+    for (int i = 0; i < 20; i++) {
+        gl_draw_target(SCREEN_WIDTH / 2, 20);
+    }
+    gl_swap_buffer();
+}
+
+void test_force_sensor(void) {
+    gpio_set_input(7);
+    while (1) {
+        unsigned int input = gpio_read(7);
+        printf("%x\n", input);
+        timer_delay_ms(500);
+    }
+}
+
 void main(void)
 {
     uart_init();
@@ -79,10 +97,12 @@ void main(void)
     gl_plot_ground(GROUND_Y);
 
     /* TESTS BELOW */
-    test_draw_images();
+/*    test_draw_images();
     test_trajectory_different_angles();
     test_trajectory_different_forces();
     test_plot_image_trajectory();
+    test_gl_draw_target();*/
+    test_force_sensor();
     /* TESTS ABOVE */
 
     // Final step: buffer with drawn contents

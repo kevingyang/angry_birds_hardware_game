@@ -5,7 +5,7 @@ struct position_t {
     int x, y;
 };
 
-/* position_t position struct stores the coordinates of bird's current position. */
+/* position_t position struct stores the coordinates of bird's and target's current position. */
 struct position_t bird_position;
 struct position_t target_position;
 

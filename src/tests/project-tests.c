@@ -81,9 +81,9 @@ void test_gl_draw_target(void) {
 }
 
 void test_force_sensor(void) {
-    gpio_set_input(7);
+    gpio_set_input(4);
     while (1) {
-        unsigned int input = gpio_read(7);
+        unsigned int input = gpio_read(4);
         printf("%x\n", input);
         timer_delay_ms(500);
     }
@@ -97,11 +97,11 @@ void main(void)
     gl_plot_ground(GROUND_Y);
 
     /* TESTS BELOW */
-/*    test_draw_images();
+    test_draw_images();
     test_trajectory_different_angles();
     test_trajectory_different_forces();
     test_plot_image_trajectory();
-    test_gl_draw_target();*/
+    test_gl_draw_target();
     test_force_sensor();
     /* TESTS ABOVE */
 

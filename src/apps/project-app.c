@@ -5,11 +5,25 @@
 #include "uart.h"
 #include "trig.h"
 #include "image.h"
-#include "project-app.h"
 #include "keyboard.h"
 #include "randomHardware.h" // for random function
 #include "spi.h"
+#include "project-app.h"
 
+#define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
+
+// TODO: Replace with real read_angle function @Selena
+double TEMP_READ_ANGLE(void) {
+    // return some value between 0 and pi/2
+    return deg_to_rad(random_getNumber(89, 1));
+}
+
+// TODO: Replace with real read_force function @James
+double TEMP_READ_FORCE(void) {
+    // return some value between 0.9 and 1
+    unsigned int precision = random_getNumber(1000, 900);
+    return precision/1000.0;
+}
 
 /*
  * Plots the ground at the given ground y-value on both buffers.
@@ -19,7 +33,6 @@ void gl_plot_ground(int ground_y_value) {
     gl_swap_buffer();
     gl_draw_rect(0, ground_y_value, SCREEN_WIDTH, 2, GL_RED);
     gl_swap_buffer();
-
 }
 
 /*
@@ -43,7 +56,10 @@ void gl_plot_initial_velocity_vector(double force, double angle, color_t color) 
 
 }
 
-
+/* 
+ * Using kinematics, this function plots the trajectory of a single point
+ * in some color given the initial force and angle that it starts at.
+ */
 void gl_plot_trajectory(double force, double angle, color_t color) {
     // set position to initial position
     bird_position.x = 50;
@@ -69,8 +85,15 @@ void gl_plot_trajectory(double force, double angle, color_t color) {
     }
 }
 
-
-void gl_plot_image_trajectory(double force, double angle, char first_initial) {
+/*
+ * This function plots the trajectory of an image on-screen given a force and
+ * angle at which it's launched, with the image customizable with the first 
+ * initial of the instructor.
+ * 
+ *  
+ */
+unsigned int gl_plot_image_trajectory(double force, double angle, char first_initial) {
+    unsigned int target_hit = 0; // if target hasn't been hit, return 0.
     // set position to initial position
     bird_position.x = 50;
 
@@ -90,13 +113,11 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
 
         // actual x position is already stored in position.x
         // convert virtual y to actual y position and store in position.y
-        // must scale y-position by image's height
+        // must move y-position up by image's height
         bird_position.y = GROUND_Y - get_image_height() - virtual_y*y_scale_factor;
 
-        gl_draw_image(bird_position.x, bird_position.y, first_initial); // draw next
-
         /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
-        timer_delay_ms(100); // delay 0.1 second before removing and going to next iteration of loop
+        timer_delay_ms(150); // delay 1/4 second before removing and going to next iteration of loop
 
         // after the first iteration, we must remove the projectile at the previous position
         if(bird_position.x != 50) {
@@ -106,14 +127,25 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
             gl_swap_buffer(); // swap back to current fb
         }
 
-        gl_swap_buffer();
+        gl_draw_image(bird_position.x, bird_position.y, first_initial); // draw next
+
+        gl_swap_buffer(); // show what's been drawn
+
+        // check if the image has hit the target
+        if(target_position.x < bird_position.x + get_image_width() &&
+           target_position.x + TARGET_SIZE > bird_position.x &&
+           target_position.y < bird_position.y + get_image_height() &&
+           target_position.y + TARGET_SIZE > bird_position.y) {
+               target_hit = 1; // turn on target hit flag to return
+        }
 
         // store previous position so we can remove it 
         previous_position.x = bird_position.x;
         previous_position.y = bird_position.y;
 
-        bird_position.x += 100; // increment to next x-value
+        bird_position.x += 20; // increment to next x-value
     }
+    return target_hit;
 }
 
 /*
@@ -146,7 +178,7 @@ void angry_nerds_graphics_init(void)
 
 /*
  * This function draws the image of a staff member given their first initial
- * at the given (x,y) coordinates.
+ * with its left corner at the given (x,y) coordinates.
  */
 void gl_draw_image(unsigned int x, unsigned int y, char first_initial)
 {
@@ -172,12 +204,17 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     unsigned int y = random_getNumber(GROUND_Y - size, 0);
     // plot target
     gl_draw_rect(x, y, size, size, GL_WHITE);
+    gl_swap_buffer();
+    gl_draw_rect(x, y, size, size, GL_WHITE);
+    gl_swap_buffer();
+
     // store target position and size
     target_position.x = x;
     target_position.y = y;
     TARGET_SIZE = size;
 }
 
+/* Reads values from force sensor through ADC */
 unsigned int adc_read(void) {   // channel 0
     unsigned char tx[3];// = {1, 0x80, 0};
     unsigned char rx[3];
@@ -190,19 +227,49 @@ unsigned int adc_read(void) {   // channel 0
     return ((rx[1] & 3) << 8) + rx[2];
 }
 
+/* Helper function that randomly selects one of the TAs as the bird to be launched! */
+char select_random_fighter() {
+    unsigned int randomNumber = random_getNumber(6, 1);
+    switch(randomNumber) {
+        case 1:
+            return 'j'; // julie
+        case 2:
+            return 'p'; // pat
+        case 3:
+            return 's'; // sean
+        case 4:
+            return 'e'; // pEter
+        case 5:
+            return 'a'; // anna
+        case 6:
+            return 'l'; // liana
+        default:
+            return '0'; // ??
+    }
+}
+
+/* 
+ * This function is called to begin the game, and initalizes the graphics 
+ * necessary.
+ * It also sets up the keyboard interface to allow the user to select
+ * game difficulty, leading to the start of a new game.
+ */
 void angry_nerds_game_init(void) {
-    angry_nerds_graphics_init();
+    random_init();
+    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
+    spi_init(SPI_CE0, 1024);
+    angry_nerds_graphics_init(); // must be initialized before graphics init (sets SCREEN_WIDTH and SCREEN_HEIGHT)
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
 
     // Set background color
     gl_clear(GL_BLACK);
     gl_draw_string(50, SCREEN_HEIGHT/2, "Welcome to Angry Nerds!", GL_WHITE);
-    gl_draw_string(50, SCREEN_HEIGHT/2 + 2*gl_get_char_height(), "Choose difficulty level by pressing a key on the RPi keyboard:", GL_WHITE);
+    gl_draw_string(50, SCREEN_HEIGHT/2 + 2*LINE_HEIGHT, "Choose difficulty level by pressing a key on the RPi keyboard:", GL_WHITE);
 
-    gl_draw_string(50, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(1) Easy", GL_GREEN);
-    gl_draw_string(350, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(2) Medium", GL_BLUE);
-    gl_draw_string(650, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(3) Hard", GL_RED);
-    gl_draw_string(950, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(4) EXPERT", GL_YELLOW);
+    gl_draw_string(50, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(1) Easy", GL_GREEN);
+    gl_draw_string(350, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(2) Medium", GL_BLUE);
+    gl_draw_string(650, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(3) Hard", GL_RED);
+    gl_draw_string(950, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(4) EXPERT", GL_YELLOW);
 
     gl_swap_buffer();
 
@@ -231,55 +298,155 @@ void angry_nerds_game_init(void) {
             default :
                 printf("Select a difficulty by pressing 1, 2, 3, or 4!");
         }
+    }
+}
+
+/*
+ * Display countdown on-screen from time to 0.
+ * This function is only defined for times between 0 and 9. 
+ */
+void display_countdown(unsigned char time) {
+    for(int i = time; i >= 0; i--) {
+        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, LINE_HEIGHT * 2, GL_BLACK); // clear previous screen
+
+        char time_char = i + '0';
+        if(i == 0) {
+            gl_swap_buffer();
+            gl_draw_string(SCREEN_WIDTH/2 - 2 * gl_get_char_width(), SCREEN_HEIGHT/2 + LINE_HEIGHT, "Fire!", GL_GREEN); // display "Fire!" prompt for 1 second
+            gl_swap_buffer();
+        } 
+
+        gl_draw_char(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, time_char, GL_RED); // display the time
+        timer_delay_ms(1000); 
+        gl_swap_buffer();
+
+        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, LINE_HEIGHT * 2, GL_BLACK); // clear previous screen
+    }
+    gl_swap_buffer();
+    gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, LINE_HEIGHT * 2, GL_BLACK); // on final iteration of loop, clear all contents.
+
+}
+
+/* 
+ * Helper function to display game instructions at top of screen on both 
+ * framebuffers.
+ */
+void angry_nerds_game_display_instructions(void) {
+    gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
+    gl_draw_string(0, LINE_HEIGHT, "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
+    gl_draw_string(0, 2*LINE_HEIGHT, "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_draw_string(SCREEN_WIDTH/2 - 7 * gl_get_char_width(), SCREEN_HEIGHT/2 - LINE_HEIGHT, "Game begins in:", GL_GREEN);
+    gl_swap_buffer();
+    // same text, on other buffer
+    gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
+    gl_draw_string(0, LINE_HEIGHT, "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
+    gl_draw_string(0, 2*LINE_HEIGHT, "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_draw_string(SCREEN_WIDTH/2 - 7 * gl_get_char_width(), SCREEN_HEIGHT/2 - LINE_HEIGHT, "Game begins in:", GL_GREEN);
+    gl_swap_buffer();
+}
+
+/* 
+ * This helper function sets the size of the target given the difficulty level 
+ * ranging from 1-4. 
+ */
+unsigned int set_target_size(unsigned int difficulty) {
+    switch (difficulty) {
+        case 1 :
+            return 250; // these values are arbitrary and can be modified to tailor difficulty.
+        case 2 : 
+            return 150;
+        case 3 : 
+            return 100;
+        case 4 :
+            return 50;
+        default :
+            printf("Invalid difficulty!");
+            return 0;
+    }
+}
+
+/* This simple helper function displays the number of targets hit so far and number of birds left at the bottom of the screen. It's called for every round of the game. */
+void gl_display_num_targets_hit_num_birds_left(int num_targets_hit, int num_attempt) {
+    // display number of targets hit so far
+    gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
+    gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
+    gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
+    gl_swap_buffer();
+    // display number of birds left
+    gl_draw_string(SCREEN_WIDTH - 15 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, "Birds left: ", GL_WHITE);
+    gl_draw_char(SCREEN_WIDTH - 2 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + (10 - num_attempt - 1), GL_RED);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_draw_string(SCREEN_WIDTH - 15 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, "Birds left: ", GL_WHITE);
+    gl_draw_char(SCREEN_WIDTH - 2 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + (10 - num_attempt - 1), GL_RED);
+    gl_swap_buffer();
+}
+
+/* 
+ * angry_nerds_game_start() is called after the game is initialized and the 
+ * difficulty is selected, with param @difficulty between 1-4 (1 = easiest, 4 =
+ * hardest).
+ * 
+ * 
+ */
+void angry_nerds_game_start(unsigned int difficulty) {
+    unsigned int num_targets_hit = 0;
+    // clear screen
+    gl_swap_buffer();
+    gl_clear(GL_BLACK);
+    gl_swap_buffer();
+    angry_nerds_game_display_instructions(); // show basic text-based game tutorial
+
+    display_countdown(5); // display the countdown
+
+    // while game is running, start a new round of the game:
+    for(int i = 0; i < 10; i++) {
+        // clear screen
+        gl_clear(GL_BLACK);
+        gl_swap_buffer();
+        gl_clear(GL_BLACK);
+        gl_swap_buffer();
+
+        // for each round of the game, start 3 second countdown on screen
+        display_countdown(3); // display the countdown
+
+        // at end of 5 second countdown, call read_accel and read_force
+        double force = TEMP_READ_FORCE();
+        double angle = TEMP_READ_ANGLE();
+        
+        gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
+        gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target
+        gl_display_num_targets_hit_num_birds_left(num_targets_hit, i); // display at bottom of screen the number of targets hit and number of birds left
+
+        // plot "bird" trajectory after reading force and angle 
+        unsigned int target_hit = gl_plot_image_trajectory(force, angle, select_random_fighter());
+        // plot trajectory of bird given angle and force
+        gl_plot_trajectory(force, angle, GL_AMBER);
+        gl_swap_buffer(); // plot on both framebuffers
+        gl_plot_trajectory(force, angle, GL_AMBER);
+        gl_swap_buffer();
+        // plot initial velocity vector given angle and force
+        gl_plot_initial_velocity_vector(force, angle, GL_BLUE);
+        gl_swap_buffer(); // plot on both framebuffers
+        gl_plot_initial_velocity_vector(force, angle, GL_BLUE);
+        gl_swap_buffer();
+
+        if(target_hit) {
+            num_targets_hit++;
+            gl_draw_string(SCREEN_WIDTH/2 - 15*gl_get_char_width(), SCREEN_HEIGHT/2, "Congrats, you hit the target!", GL_GREEN);
+            gl_swap_buffer();
+        }
+
+        timer_delay_ms(5000); // delay 5 seconds so user can see the trajectory of what they shot before going to next round
 
     }
-
-}
-
-void angry_nerds_game_start(unsigned int difficulty) {
-    // 
-
 }
 
 
-/*void main (void)
+void main (void)
 {
     uart_init();
-    random_init();
-    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
-    spi_init(SPI_CE0, 4);
-
-    angry_nerds_game_init();
-
-    // angry_nerds_graphics_init();
-    // gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
-
-    // // Set background color
-    // gl_clear(GL_BLACK);
-
-    // // plot ground on both framebuffers
-    // gl_plot_ground(GROUND_Y);
-
-    // // throw julie at 60 degrees
-    // gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
-
-    // // plot trajectory of bird given angle and force
-    // gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
-    // gl_swap_buffer(); // plot on both framebuffers
-    // gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
-    // gl_swap_buffer();
-
-    // // plot initial velocity vector given angle and force
-    // gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
-    // gl_swap_buffer(); // plot on both framebuffers
-    // gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
-    // gl_swap_buffer();
-
-
-    // gl_draw_target(SCREEN_WIDTH / 2, 100);
-
-    // // Show buffer with drawn contents
-    // gl_swap_buffer();
-
+    angry_nerds_game_init(); // start the angry nerds game!
     uart_putchar(EOT);
-}*/
+}

@@ -9,10 +9,12 @@
 #include "randomHardware.h" // for random function
 #include "project-app.h"
 
+#define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
+
+
 // TODO: Replace with real read_angle function @Selena
 double TEMP_READ_ANGLE(void) {
     // return some value between 0 and pi/2
-    
     return deg_to_rad(random_getNumber(89, 1));
 }
 
@@ -56,7 +58,10 @@ void gl_plot_initial_velocity_vector(double force, double angle, color_t color) 
 
 }
 
-
+/* 
+ * Using kinematics, this function plots the trajectory of a single point
+ * in some color given the initial force and angle that it starts at.
+ */
 void gl_plot_trajectory(double force, double angle, color_t color) {
     // set position to initial position
     bird_position.x = 50;
@@ -176,7 +181,7 @@ void angry_nerds_graphics_init(void)
 
 /*
  * This function draws the image of a staff member given their first initial
- * at the given (x,y) coordinates.
+ * with its left corner at the given (x,y) coordinates.
  */
 void gl_draw_image(unsigned int x, unsigned int y, char first_initial)
 {
@@ -220,12 +225,12 @@ void angry_nerds_game_init(void) {
     // Set background color
     gl_clear(GL_BLACK);
     gl_draw_string(50, SCREEN_HEIGHT/2, "Welcome to Angry Nerds!", GL_WHITE);
-    gl_draw_string(50, SCREEN_HEIGHT/2 + 2*gl_get_char_height(), "Choose difficulty level by pressing a key on the RPi keyboard:", GL_WHITE);
+    gl_draw_string(50, SCREEN_HEIGHT/2 + 2*LINE_HEIGHT, "Choose difficulty level by pressing a key on the RPi keyboard:", GL_WHITE);
 
-    gl_draw_string(50, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(1) Easy", GL_GREEN);
-    gl_draw_string(350, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(2) Medium", GL_BLUE);
-    gl_draw_string(650, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(3) Hard", GL_RED);
-    gl_draw_string(950, SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "(4) EXPERT", GL_YELLOW);
+    gl_draw_string(50, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(1) Easy", GL_GREEN);
+    gl_draw_string(350, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(2) Medium", GL_BLUE);
+    gl_draw_string(650, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(3) Hard", GL_RED);
+    gl_draw_string(950, SCREEN_HEIGHT/2 + 3*LINE_HEIGHT, "(4) EXPERT", GL_YELLOW);
 
     gl_swap_buffer();
 
@@ -263,31 +268,59 @@ void angry_nerds_game_init(void) {
  */
 void display_countdown(unsigned char time) {
     for(int i = time; i >= 0; i--) {
-        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, gl_get_char_height() * 2, GL_BLACK); // clear previous screen
+        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, LINE_HEIGHT * 2, GL_BLACK); // clear previous screen
 
         char time_char = i + '0';
         if(i == 0) {
-            gl_draw_string(SCREEN_WIDTH/2 - 2 * gl_get_char_width(), SCREEN_HEIGHT/2 + gl_get_char_height(), "Fire!", GL_GREEN); // display "Fire!" prompt for 1 second
+            gl_swap_buffer();
+            gl_draw_string(SCREEN_WIDTH/2 - 2 * gl_get_char_width(), SCREEN_HEIGHT/2 + LINE_HEIGHT, "Fire!", GL_GREEN); // display "Fire!" prompt for 1 second
+            gl_swap_buffer();
         } 
 
         gl_draw_char(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, time_char, GL_RED); // display the time
         timer_delay_ms(1000); 
         gl_swap_buffer();
 
-        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, gl_get_char_height() * 2, GL_BLACK); // clear previous screen
+        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, LINE_HEIGHT * 2, GL_BLACK); // clear previous screen
     }
+    gl_swap_buffer();
+    gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, LINE_HEIGHT * 2, GL_BLACK); // on final iteration of loop, clear all contents.
+
 }
 
 /* Helper function to display game instructions at top of screen on both framebuffers */
 void angry_nerds_game_display_instructions(void) {
     gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
-    gl_draw_string(0, gl_get_char_height(), "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
-    gl_draw_string(0, 2*gl_get_char_height(), "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_draw_string(0, LINE_HEIGHT, "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
+    gl_draw_string(0, 2*LINE_HEIGHT, "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_draw_string(SCREEN_WIDTH/2 - 7 * gl_get_char_width(), SCREEN_HEIGHT/2 - LINE_HEIGHT, "Game begins in:", GL_GREEN);
     gl_swap_buffer();
+    // same text, on other buffer
     gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
-    gl_draw_string(0, gl_get_char_height(), "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
-    gl_draw_string(0, 2*gl_get_char_height(), "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_draw_string(0, LINE_HEIGHT, "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
+    gl_draw_string(0, 2*LINE_HEIGHT, "Your objective is to knock out as many targets as possible in 10 tries!", GL_WHITE);
+    gl_draw_string(SCREEN_WIDTH/2 - 7 * gl_get_char_width(), SCREEN_HEIGHT/2 - LINE_HEIGHT, "Game begins in:", GL_GREEN);
     gl_swap_buffer();
+}
+
+/* 
+ * This helper function sets the size of the target given the difficulty level 
+ * ranging from 1-4. 
+ */
+unsigned int set_target_size(unsigned int difficulty) {
+    switch (difficulty) {
+        case 1 :
+            return 250; // these values are arbitrary and can be modified to tailor difficulty.
+        case 2 : 
+            return 150;
+        case 3 : 
+            return 100;
+        case 4 :
+            return 50;
+        default :
+            printf("Invalid difficulty!");
+            return 0;
+    }
 }
 
 /* 
@@ -323,14 +356,14 @@ void angry_nerds_game_start(unsigned int difficulty) {
         double angle = TEMP_READ_ANGLE();
         
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
-        gl_draw_target(SCREEN_WIDTH / 2, 100); // plot target
+        gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target
 
         // display number of targets hit so far
-        gl_draw_string(0, SCREEN_HEIGHT - gl_get_char_height(), "Number of targets hit: ", GL_WHITE);
-        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - gl_get_char_height(), '0' + num_targets_hit, GL_GREEN);
+        gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
+        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
         gl_swap_buffer(); // plot on both framebuffers
-        gl_draw_string(0, SCREEN_HEIGHT - gl_get_char_height(), "Number of targets hit: ", GL_WHITE);
-        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - gl_get_char_height(), '0' + num_targets_hit, GL_GREEN);
+        gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
+        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
         gl_swap_buffer();
 
 
@@ -350,16 +383,13 @@ void angry_nerds_game_start(unsigned int difficulty) {
 
         if(target_hit) {
             num_targets_hit++;
-            gl_draw_string(SCREEN_WIDTH/2 - 15*gl_get_char_width(), SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "Congrats, you hit the target!", GL_GREEN);
+            gl_draw_string(SCREEN_WIDTH/2 - 15*gl_get_char_width(), SCREEN_HEIGHT/2, "Congrats, you hit the target!", GL_GREEN);
             gl_swap_buffer();
         }
 
         timer_delay_ms(5000); // delay 5 seconds so user can see the trajectory of what they shot before going to next round
 
     }
-
-
-
 }
 
 

@@ -11,7 +11,6 @@
 
 #define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
 
-
 // TODO: Replace with real read_angle function @Selena
 double TEMP_READ_ANGLE(void) {
     // return some value between 0 and pi/2
@@ -117,7 +116,7 @@ unsigned int gl_plot_image_trajectory(double force, double angle, char first_ini
         bird_position.y = GROUND_Y - get_image_height() - virtual_y*y_scale_factor;
 
         /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
-        timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
+        timer_delay_ms(150); // delay 1/4 second before removing and going to next iteration of loop
 
         // after the first iteration, we must remove the projectile at the previous position
         if(bird_position.x != 50) {
@@ -136,8 +135,7 @@ unsigned int gl_plot_image_trajectory(double force, double angle, char first_ini
            target_position.x + TARGET_SIZE > bird_position.x &&
            target_position.y < bird_position.y + get_image_height() &&
            target_position.y + TARGET_SIZE > bird_position.y) {
-               printf("Target hit!");
-               target_hit = 1;
+               target_hit = 1; // turn on target hit flag to return
         }
 
         // store previous position so we can remove it 
@@ -236,8 +234,16 @@ char select_random_fighter() {
     }
 }
 
+/* 
+ * This function is called to begin the game, and initalizes the graphics 
+ * necessary.
+ * It also sets up the keyboard interface to allow the user to select
+ * game difficulty, leading to the start of a new game.
+ */
 void angry_nerds_game_init(void) {
-    angry_nerds_graphics_init();
+    random_init();
+    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
+    angry_nerds_graphics_init(); // must be initialized before graphics init (sets SCREEN_WIDTH and SCREEN_HEIGHT)
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
 
     // Set background color
@@ -306,7 +312,10 @@ void display_countdown(unsigned char time) {
 
 }
 
-/* Helper function to display game instructions at top of screen on both framebuffers */
+/* 
+ * Helper function to display game instructions at top of screen on both 
+ * framebuffers.
+ */
 void angry_nerds_game_display_instructions(void) {
     gl_draw_string(0, 0, "Welcome to the Angry Nerds game!", GL_WHITE);
     gl_draw_string(0, LINE_HEIGHT, "To shoot, pull back the slingshot and release when the countdown timer displayed on screen is up.", GL_WHITE);
@@ -341,6 +350,7 @@ unsigned int set_target_size(unsigned int difficulty) {
     }
 }
 
+/* This simple helper function displays the number of targets hit so far and number of birds left at the bottom of the screen. It's called for every round of the game. */
 void gl_display_num_targets_hit_num_birds_left(int num_targets_hit, int num_attempt) {
     // display number of targets hit so far
     gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
@@ -422,10 +432,6 @@ void angry_nerds_game_start(unsigned int difficulty) {
 void main (void)
 {
     uart_init();
-    random_init();
-    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
-
     angry_nerds_game_init(); // start the angry nerds game!
-
     uart_putchar(EOT);
 }

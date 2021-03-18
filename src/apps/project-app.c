@@ -8,6 +8,7 @@
 #include "project-app.h"
 #include "keyboard.h"
 #include "randomHardware.h" // for random function
+#include "spi.h"
 
 
 /*
@@ -177,6 +178,17 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     TARGET_SIZE = size;
 }
 
+unsigned int adc_read(void) {   // channel 0
+    unsigned char tx[3];// = {1, 0x80, 0};
+    unsigned char rx[3];
+
+    tx[0] = 1;
+    tx[1] = 0x80;
+    tx[2] = 0; 
+
+    spi_transfer(tx, rx, 3);
+    return ((rx[1] & 3) << 8) + rx[2];
+}
 
 void angry_nerds_game_init(void) {
     angry_nerds_graphics_init();
@@ -230,11 +242,12 @@ void angry_nerds_game_start(unsigned int difficulty) {
 }
 
 
-void main (void)
+/*void main (void)
 {
     uart_init();
     random_init();
     keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
+    spi_init(SPI_CE0, 4);
 
     angry_nerds_game_init();
 
@@ -269,4 +282,4 @@ void main (void)
     // gl_swap_buffer();
 
     uart_putchar(EOT);
-}
+}*/

@@ -33,6 +33,12 @@ double velocity_scale_factor; // factor to scale the force vector length by to g
 #define KEYBOARD_CLOCK GPIO_PIN3
 #define KEYBOARD_DATA GPIO_PIN4
 
+/* SPI setup */
+#define CE0 GPIO_PIN8
+#define TX GPIO_PIN10   // input
+#define RX GPIO_PIN9    // output
+#define CLK GPIO_PIN11
+#define FSR_CHANNEL 0
 
 void gl_plot_ground(int ground_y_value);
 void gl_plot_initial_velocity_vector(double force, double angle, color_t color);
@@ -41,6 +47,7 @@ int calc_max_height(double force, double angle);
 void gl_draw_image(unsigned int x, unsigned int y, char first_initial);
 void gl_plot_image_trajectory(double force, double angle, char first_initial);
 void gl_draw_target(unsigned int leftBound, unsigned int size);
+unsigned int adc_read(void);
 
 void angry_nerds_graphics_init(void);
 void angry_nerds_game_init(void);

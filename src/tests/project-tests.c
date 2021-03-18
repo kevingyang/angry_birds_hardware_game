@@ -8,6 +8,7 @@
 #include "trig.h"
 #include "image.h"
 #include "randomHardware.h"
+#include "spi.h"
 
 void test_trajectory_different_forces (void) {
     for(int i = 1; i <= 10; i++) {
@@ -81,10 +82,10 @@ void test_gl_draw_target(void) {
 }
 
 void test_force_sensor(void) {
-    gpio_set_input(4);
+    spi_init(SPI_CE0, 1024);
     while (1) {
-        unsigned int input = gpio_read(4);
-        printf("%x\n", input);
+        unsigned int val = adc_read();
+        printf("%x\n", val);
         timer_delay_ms(500);
     }
 }
@@ -98,12 +99,12 @@ void main(void)
     random_init();
 
     /* TESTS BELOW */
-    test_draw_images();
-    test_trajectory_different_angles();
-    test_trajectory_different_forces();
-    test_plot_image_trajectory();
-    test_gl_draw_target();
-//    test_force_sensor();
+//    test_draw_images();
+//    test_trajectory_different_angles();
+//    test_trajectory_different_forces();
+//    test_plot_image_trajectory();
+//    test_gl_draw_target();
+    test_force_sensor();
     /* TESTS ABOVE */
 
     // Final step: buffer with drawn contents

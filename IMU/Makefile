@@ -1,5 +1,5 @@
 NAME = accel
-MODULES = LSM6DS33.o MahonyAHRS.o
+MODULES = LSM6DS33.o matrix.o fusion.o
 
 CFLAGS = -I$(CS107E)/include -g -Wall -Og -std=c99 -ffreestanding
 LDFLAGS = -nostdlib -T memmap -L$(CS107E)/lib
@@ -30,4 +30,3 @@ clean:
 
 .PHONY: all clean run
 .PRECIOUS: %.elf %.o
-

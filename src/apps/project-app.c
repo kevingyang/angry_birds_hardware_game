@@ -5,9 +5,24 @@
 #include "uart.h"
 #include "trig.h"
 #include "image.h"
-#include "project-app.h"
 #include "keyboard.h"
 #include "randomHardware.h" // for random function
+#include "project-app.h"
+
+// TODO: Replace with real read_angle function @Selena
+double TEMP_READ_ANGLE(void) {
+    // return some value between 0 and pi/2
+    
+    return deg_to_rad(random_getNumber(89, 1));
+}
+
+// TODO: Replace with real read_force function @James
+double TEMP_READ_FORCE(void) {
+    // return some value between 0.9 and 1
+    unsigned int precision = random_getNumber(1000, 900);
+    return precision/1000.0;
+}
+
 
 
 /*
@@ -18,7 +33,6 @@ void gl_plot_ground(int ground_y_value) {
     gl_swap_buffer();
     gl_draw_rect(0, ground_y_value, SCREEN_WIDTH, 2, GL_RED);
     gl_swap_buffer();
-
 }
 
 /*
@@ -68,8 +82,15 @@ void gl_plot_trajectory(double force, double angle, color_t color) {
     }
 }
 
-
-void gl_plot_image_trajectory(double force, double angle, char first_initial) {
+/*
+ * This function plots the trajectory of an image on-screen given a force and
+ * angle at which it's launched, with the image customizable with the first 
+ * initial of the instructor.
+ * 
+ *  
+ */
+unsigned int gl_plot_image_trajectory(double force, double angle, char first_initial) {
+    unsigned int target_hit = 0; // if target hasn't been hit, return 0.
     // set position to initial position
     bird_position.x = 50;
 
@@ -89,13 +110,11 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
 
         // actual x position is already stored in position.x
         // convert virtual y to actual y position and store in position.y
-        // must scale y-position by image's height
+        // must move y-position up by image's height
         bird_position.y = GROUND_Y - get_image_height() - virtual_y*y_scale_factor;
 
-        gl_draw_image(bird_position.x, bird_position.y, first_initial); // draw next
-
         /* Change the length of timer delay here to affect how fast the projectile moves across the screen. */
-        timer_delay_ms(100); // delay 0.1 second before removing and going to next iteration of loop
+        timer_delay_ms(250); // delay 1/4 second before removing and going to next iteration of loop
 
         // after the first iteration, we must remove the projectile at the previous position
         if(bird_position.x != 50) {
@@ -105,14 +124,26 @@ void gl_plot_image_trajectory(double force, double angle, char first_initial) {
             gl_swap_buffer(); // swap back to current fb
         }
 
-        gl_swap_buffer();
+        gl_draw_image(bird_position.x, bird_position.y, first_initial); // draw next
+
+        gl_swap_buffer(); // show what's been drawn
+
+        // check if the image has hit the target
+        if(target_position.x < bird_position.x + get_image_width() &&
+           target_position.x + TARGET_SIZE > bird_position.x &&
+           target_position.y < bird_position.y + get_image_height() &&
+           target_position.y + TARGET_SIZE > bird_position.y) {
+               printf("Target hit!");
+               target_hit = 1;
+        }
 
         // store previous position so we can remove it 
         previous_position.x = bird_position.x;
         previous_position.y = bird_position.y;
 
-        bird_position.x += 100; // increment to next x-value
+        bird_position.x += 20; // increment to next x-value
     }
+    return target_hit;
 }
 
 /*
@@ -171,6 +202,10 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     unsigned int y = random_getNumber(GROUND_Y - size, 0);
     // plot target
     gl_draw_rect(x, y, size, size, GL_WHITE);
+    gl_swap_buffer();
+    gl_draw_rect(x, y, size, size, GL_WHITE);
+    gl_swap_buffer();
+
     // store target position and size
     target_position.x = x;
     target_position.y = y;
@@ -219,9 +254,7 @@ void angry_nerds_game_init(void) {
             default :
                 printf("Select a difficulty by pressing 1, 2, 3, or 4!");
         }
-
     }
-
 }
 
 /*
@@ -230,16 +263,18 @@ void angry_nerds_game_init(void) {
  */
 void display_countdown(unsigned char time) {
     for(int i = time; i >= 0; i--) {
+        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, gl_get_char_height() * 2, GL_BLACK); // clear previous screen
+
         char time_char = i + '0';
-        gl_draw_char(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, time_char, GL_RED); // display the time
         if(i == 0) {
             gl_draw_string(SCREEN_WIDTH/2 - 2 * gl_get_char_width(), SCREEN_HEIGHT/2 + gl_get_char_height(), "Fire!", GL_GREEN); // display "Fire!" prompt for 1 second
         } 
+
+        gl_draw_char(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, time_char, GL_RED); // display the time
         timer_delay_ms(1000); 
         gl_swap_buffer();
 
-        gl_draw_rect(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, gl_get_char_width(), gl_get_char_height(), GL_BLACK); // clear char
-
+        gl_draw_rect(SCREEN_WIDTH/2  - 2 * gl_get_char_width(), SCREEN_HEIGHT/2, gl_get_char_width() * 5, gl_get_char_height() * 2, GL_BLACK); // clear previous screen
     }
 }
 
@@ -255,18 +290,6 @@ void angry_nerds_game_display_instructions(void) {
     gl_swap_buffer();
 }
 
-// TODO: Replace with real read_angle function @Selena
-double TEMP_READ_ANGLE(void) {
-    // return some value between 0 and pi/2
-    return deg_to_rad(60);
-}
-
-// TODO: Replace with real read_force function @James
-double TEMP_READ_FORCE(void) {
-    // return some value between 0 and 1
-    return 0.75;
-}
-
 /* 
  * angry_nerds_game_start() is called after the game is initialized and the 
  * difficulty is selected, with param @difficulty between 1-4 (1 = easiest, 4 =
@@ -275,6 +298,7 @@ double TEMP_READ_FORCE(void) {
  * 
  */
 void angry_nerds_game_start(unsigned int difficulty) {
+    unsigned int num_targets_hit = 0;
     // clear screen
     gl_swap_buffer();
     gl_clear(GL_BLACK);
@@ -291,20 +315,46 @@ void angry_nerds_game_start(unsigned int difficulty) {
         gl_clear(GL_BLACK);
         gl_swap_buffer();
 
-        // for each round of the game, start 5 second countdown on screen
-        display_countdown(5); // display the countdown
+        // for each round of the game, start 3 second countdown on screen
+        display_countdown(3); // display the countdown
 
         // at end of 5 second countdown, call read_accel and read_force
         double force = TEMP_READ_FORCE();
         double angle = TEMP_READ_ANGLE();
+        
+        gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
+        gl_draw_target(SCREEN_WIDTH / 2, 100); // plot target
 
-        // plot ground on both framebuffers
-        gl_plot_ground(GROUND_Y);
+        // display number of targets hit so far
+        gl_draw_string(0, SCREEN_HEIGHT - gl_get_char_height(), "Number of targets hit: ", GL_WHITE);
+        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - gl_get_char_height(), '0' + num_targets_hit, GL_GREEN);
+        gl_swap_buffer(); // plot on both framebuffers
+        gl_draw_string(0, SCREEN_HEIGHT - gl_get_char_height(), "Number of targets hit: ", GL_WHITE);
+        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - gl_get_char_height(), '0' + num_targets_hit, GL_GREEN);
+        gl_swap_buffer();
+
 
         // plot trajectory after reading force and angle 
-        gl_plot_image_trajectory(force, angle, 'j');
+        unsigned int target_hit = gl_plot_image_trajectory(force, angle, 'j');
+        // plot trajectory of bird given angle and force
+        gl_plot_trajectory(force, angle, GL_AMBER);
+        gl_swap_buffer(); // plot on both framebuffers
+        gl_plot_trajectory(force, angle, GL_AMBER);
+        gl_swap_buffer();
 
-        // wait for "x" key to exit
+        // plot initial velocity vector given angle and force
+        gl_plot_initial_velocity_vector(force, angle, GL_BLUE);
+        gl_swap_buffer(); // plot on both framebuffers
+        gl_plot_initial_velocity_vector(force, angle, GL_BLUE);
+        gl_swap_buffer();
+
+        if(target_hit) {
+            num_targets_hit++;
+            gl_draw_string(SCREEN_WIDTH/2 - 15*gl_get_char_width(), SCREEN_HEIGHT/2 + 3*gl_get_char_height(), "Congrats, you hit the target!", GL_GREEN);
+            gl_swap_buffer();
+        }
+
+        timer_delay_ms(5000); // delay 5 seconds so user can see the trajectory of what they shot before going to next round
 
     }
 
@@ -319,37 +369,7 @@ void main (void)
     random_init();
     keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
 
-    angry_nerds_game_init();
-
-    // angry_nerds_graphics_init();
-    // gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
-
-    // // Set background color
-    // gl_clear(GL_BLACK);
-
-    // // plot ground on both framebuffers
-    // gl_plot_ground(GROUND_Y);
-
-    // // throw julie at 60 degrees
-    // gl_plot_image_trajectory(1.0, deg_to_rad(60), 'j');
-
-    // // plot trajectory of bird given angle and force
-    // gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
-    // gl_swap_buffer(); // plot on both framebuffers
-    // gl_plot_trajectory(1.0, deg_to_rad(60), GL_AMBER);
-    // gl_swap_buffer();
-
-    // // plot initial velocity vector given angle and force
-    // gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
-    // gl_swap_buffer(); // plot on both framebuffers
-    // gl_plot_initial_velocity_vector(1.0, deg_to_rad(60), GL_BLACK);
-    // gl_swap_buffer();
-
-
-    // gl_draw_target(SCREEN_WIDTH / 2, 100);
-
-    // // Show buffer with drawn contents
-    // gl_swap_buffer();
+    angry_nerds_game_init(); // start the angry nerds game!
 
     uart_putchar(EOT);
 }

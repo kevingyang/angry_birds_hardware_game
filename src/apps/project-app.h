@@ -39,7 +39,7 @@ void gl_plot_initial_velocity_vector(double force, double angle, color_t color);
 void gl_plot_trajectory(double force, double angle, color_t color);
 int calc_max_height(double force, double angle);
 void gl_draw_image(unsigned int x, unsigned int y, char first_initial);
-void gl_plot_image_trajectory(double force, double angle, char first_initial);
+unsigned int gl_plot_image_trajectory(double force, double angle, char first_initial);
 void gl_draw_target(unsigned int leftBound, unsigned int size);
 
 void angry_nerds_graphics_init(void);

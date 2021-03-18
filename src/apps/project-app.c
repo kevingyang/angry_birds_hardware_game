@@ -25,8 +25,6 @@ double TEMP_READ_FORCE(void) {
     return precision/1000.0;
 }
 
-
-
 /*
  * Plots the ground at the given ground y-value on both buffers.
  */
@@ -217,6 +215,26 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     TARGET_SIZE = size;
 }
 
+/* Helper function that randomly selects one of the TAs as the bird to be launched! */
+char select_random_fighter() {
+    unsigned int randomNumber = random_getNumber(6, 1);
+    switch(randomNumber) {
+        case 1:
+            return 'j'; // julie
+        case 2:
+            return 'p'; // pat
+        case 3:
+            return 's'; // sean
+        case 4:
+            return 'e'; // pEter
+        case 5:
+            return 'a'; // anna
+        case 6:
+            return 'l'; // liana
+        default:
+            return '0'; // ??
+    }
+}
 
 void angry_nerds_game_init(void) {
     angry_nerds_graphics_init();
@@ -323,6 +341,23 @@ unsigned int set_target_size(unsigned int difficulty) {
     }
 }
 
+void gl_display_num_targets_hit_num_birds_left(int num_targets_hit, int num_attempt) {
+    // display number of targets hit so far
+    gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
+    gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
+    gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
+    gl_swap_buffer();
+    // display number of birds left
+    gl_draw_string(SCREEN_WIDTH - 15 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, "Birds left: ", GL_WHITE);
+    gl_draw_char(SCREEN_WIDTH - 2 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + (10 - num_attempt - 1), GL_RED);
+    gl_swap_buffer(); // plot on both framebuffers
+    gl_draw_string(SCREEN_WIDTH - 15 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, "Birds left: ", GL_WHITE);
+    gl_draw_char(SCREEN_WIDTH - 2 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + (10 - num_attempt - 1), GL_RED);
+    gl_swap_buffer();
+}
+
 /* 
  * angry_nerds_game_start() is called after the game is initialized and the 
  * difficulty is selected, with param @difficulty between 1-4 (1 = easiest, 4 =
@@ -357,24 +392,15 @@ void angry_nerds_game_start(unsigned int difficulty) {
         
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
         gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target
+        gl_display_num_targets_hit_num_birds_left(num_targets_hit, i); // display at bottom of screen the number of targets hit and number of birds left
 
-        // display number of targets hit so far
-        gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
-        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
-        gl_swap_buffer(); // plot on both framebuffers
-        gl_draw_string(0, SCREEN_HEIGHT - LINE_HEIGHT, "Number of targets hit: ", GL_WHITE);
-        gl_draw_char(24 * gl_get_char_width(), SCREEN_HEIGHT - LINE_HEIGHT, '0' + num_targets_hit, GL_GREEN);
-        gl_swap_buffer();
-
-
-        // plot trajectory after reading force and angle 
-        unsigned int target_hit = gl_plot_image_trajectory(force, angle, 'j');
+        // plot "bird" trajectory after reading force and angle 
+        unsigned int target_hit = gl_plot_image_trajectory(force, angle, select_random_fighter());
         // plot trajectory of bird given angle and force
         gl_plot_trajectory(force, angle, GL_AMBER);
         gl_swap_buffer(); // plot on both framebuffers
         gl_plot_trajectory(force, angle, GL_AMBER);
         gl_swap_buffer();
-
         // plot initial velocity vector given angle and force
         gl_plot_initial_velocity_vector(force, angle, GL_BLUE);
         gl_swap_buffer(); // plot on both framebuffers

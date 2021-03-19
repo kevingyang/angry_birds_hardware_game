@@ -28,18 +28,19 @@ How well was your team able to execute on the plan in your proposal?
 Any trying or heroic moments you would like to share? Of what are you particularly proud: the effort you put into it? the end product? 
 the process you followed? what you learned along the way? Tell us about it!
 
-Overall, our team was able to accomplish our goal of replicating an Angry Birds-esque game using a real slingshot. Heroic moments include spending
-days on implementing an amazing suite of graphics functions (Kevin), setting up the slingshot and a majority of the hardware (Selena), and staying
-up the night before project presentations to integrate hardware with software (James and Selena). We were able to learn the difficulties that come
-with using sensors such as IMUs and force-sensing resistors, the difficulties that go into combining hardware with software, as well as the
-workflow of using Git and Github to code collaboratively.
-
 ## Photos
 You are encouraged to submit photos/videos of your project in action. 
 Add the files and commit to your project repository to include along with your submission.
 
-![displaying images of instructors](https://user-images.githubusercontent.com/6740161/111840331-d7788e80-88c1-11eb-9910-7cf0d0d1def9.jpg)
-![image buffer issues](https://user-images.githubusercontent.com/6740161/111840340-dc3d4280-88c1-11eb-8f1b-339be8f88e5c.jpg)
-![image buffer images 2](https://user-images.githubusercontent.com/6740161/111840349-df383300-88c1-11eb-9a05-cab50b7acec9.jpg)
+Plotting various trajectories!
+<img width="909" alt="plotting trajectories graphics" src="https://user-images.githubusercontent.com/6740161/111843188-58398980-88c6-11eb-8a62-5438e9bd59eb.png">
 
+Issues with scaling to the correct framebuffer size in calculating the initial velocity vector and trajectory:
+<img width="869" alt="math errors graphics" src="https://user-images.githubusercontent.com/6740161/111843241-6b4c5980-88c6-11eb-90d2-5b4f77651a7d.png">
 
+Issues with loading the image buffer:
+<img width="511" alt="image buffer issues" src="https://user-images.githubusercontent.com/6740161/111843267-756e5800-88c6-11eb-92fa-2f2d846da3a8.png">
+<img width="908" alt="image buffer issues 2" src="https://user-images.githubusercontent.com/6740161/111843291-815a1a00-88c6-11eb-8e69-4bd1ada02cc1.png">
+
+Sort-of working images of instructors -- sorry Peter and Liana!
+<img width="406" alt="displaying images of instructors" src="https://user-images.githubusercontent.com/6740161/111843300-88812800-88c6-11eb-83ac-c32a9cfcdf36.png">

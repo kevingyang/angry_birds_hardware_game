@@ -36,8 +36,9 @@ unsigned int read_angle(void) {
     // find complementary angle
     z = 90 - z;
 
+    z = (unsigned int) deg_to_rad(z);
     printf("angle: %d\n", z);
-    return (unsigned int)z;
+    return z;
 }
 
 /* Reads values from force sensor through ADC */
@@ -194,7 +195,7 @@ void angry_nerds_graphics_init(void)
     SCREEN_WIDTH = 1400;
     SCREEN_HEIGHT = 900;
     GROUND_Y = SCREEN_HEIGHT - 50;
-    velocity_scale_factor = 10.0;
+    velocity_scale_factor = 1;
 
     // 2. Calculate max height and width the bird can be launched to from kinematic principles.
     // maximum height results from maximum force (1.0) applied at 45 degree angle.
@@ -431,10 +432,14 @@ void angry_nerds_game_start(unsigned int difficulty) {
 
         // at end of 5 second countdown, call read_accel and read_force
         double force = read_force();
-        printf("after read_force()\n");
         double angle = read_angle();
+        if (force > 200) force = 200;
+        force /= 2000;
+        force += 0.9;
+
+        printf("after read_force()\n");
         printf("after read_angle()\n");
-        
+
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
         gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target
         gl_display_num_targets_hit_num_birds_left(num_targets_hit, i); // display at bottom of screen the number of targets hit and number of birds left
@@ -462,7 +467,6 @@ void angry_nerds_game_start(unsigned int difficulty) {
 
     }
 }
-
 
 void main (void)
 {

@@ -82,11 +82,10 @@ void test_gl_draw_target(void) {
 }
 
 void test_force_sensor(void) {
-    spi_init(SPI_CE0, 1024);
+    spi_init(SPI_CE0, 125000000);
     while (1) {
-        unsigned int val = adc_read();
-        printf("%x\n", val);
-        timer_delay_ms(500);
+        unsigned int val = read_force();
+        printf("%d\n", val);
     }
 }
 

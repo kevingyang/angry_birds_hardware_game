@@ -1,7 +1,7 @@
 #include "timer.h"
 #include "uart.h"
 #include "i2c.h"
-#include "printf.h"
+//#include "printf.h"
 
 #include "LSM6DS33.h"
 #include "imuread.h"
@@ -15,7 +15,7 @@ void main(void) {
 
     i2c_init();
 	lsm6ds33_init();
-    //fusion_init();
+    fusion_init();
 
     printf("whoami=%x\n", lsm6ds33_get_whoami());
 
@@ -49,7 +49,7 @@ void main(void) {
         const GyroSensor_t *gyro_ptr = &gyro;
 
         fusion_update(accel_ptr, NULL, gyro_ptr, NULL);
-        printf("new accel=(%fmg,%fmg,%fmg)\n\n", accel_ptr->Gp[0], accel_ptr->Gp[1], accel_ptr->Gp[2]);
+        printf("new accel=(%dmg,%dmg,%dmg)\n\n", (int)accel_ptr->Gp[0], (int)accel_ptr->Gp[1], (int)accel_ptr->Gp[2]);
 
         //MahonyAHRSupdateIMU(a, b, c, x, y, z);
         //printf("corrr=(%dmg,%dmg,%dmg)\n\n", a, b, c);

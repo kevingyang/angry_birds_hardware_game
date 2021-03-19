@@ -9,20 +9,29 @@
 #include "randomHardware.h" // for random function
 #include "spi.h"
 #include "project-app.h"
+#include "LSM6DS33.h"
+#include "imuread.h"
 
 #define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
 
-// TODO: Replace with real read_angle function @Selena
-double TEMP_READ_ANGLE(void) {
-    // return some value between 0 and pi/2
-    return deg_to_rad(random_getNumber(89, 1));
+/* Reads angle from IMU */
+unsigned int read_angle(void) {
+    short x, y, z;
+    lsm6ds33_read_accelerometer(&x, &y, &z);
+    return deg_to_rad(acosf(z));
 }
 
-// TODO: Replace with real read_force function @James
-double TEMP_READ_FORCE(void) {
-    // return some value between 0.9 and 1
-    unsigned int precision = random_getNumber(1000, 900);
-    return precision/1000.0;
+/* Reads values from force sensor through ADC */
+unsigned int read_force(void) {   // channel 0
+    unsigned char tx[3];// = {1, 0x80, 0};
+    unsigned char rx[3];
+
+    tx[0] = 1;
+    tx[1] = 0x80;
+    tx[2] = 0; 
+
+    spi_transfer(tx, rx, 3);
+    return ((rx[1] & 3) << 8) + rx[2];
 }
 
 /*
@@ -175,7 +184,6 @@ void angry_nerds_graphics_init(void)
     x_scale_factor = (double) (SCREEN_WIDTH - 50) / max_width;
 }
 
-
 /*
  * This function draws the image of a staff member given their first initial
  * with its left corner at the given (x,y) coordinates.
@@ -214,18 +222,6 @@ void gl_draw_target(unsigned int leftBound, unsigned int size)
     TARGET_SIZE = size;
 }
 
-/* Reads values from force sensor through ADC */
-unsigned int adc_read(void) {   // channel 0
-    unsigned char tx[3];// = {1, 0x80, 0};
-    unsigned char rx[3];
-
-    tx[0] = 1;
-    tx[1] = 0x80;
-    tx[2] = 0; 
-
-    spi_transfer(tx, rx, 3);
-    return ((rx[1] & 3) << 8) + rx[2];
-}
 
 /* Helper function that randomly selects one of the TAs as the bird to be launched! */
 char select_random_fighter() {
@@ -257,7 +253,7 @@ char select_random_fighter() {
 void angry_nerds_game_init(void) {
     random_init();
     keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
-    spi_init(SPI_CE0, 1024);
+    spi_init(SPI_CE0, 125000000);
     angry_nerds_graphics_init(); // must be initialized before graphics init (sets SCREEN_WIDTH and SCREEN_HEIGHT)
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
 
@@ -412,7 +408,7 @@ void angry_nerds_game_start(unsigned int difficulty) {
         display_countdown(3); // display the countdown
 
         // at end of 5 second countdown, call read_accel and read_force
-        double force = TEMP_READ_FORCE();
+        double force = read_force();
         double angle = TEMP_READ_ANGLE();
         
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
@@ -444,9 +440,9 @@ void angry_nerds_game_start(unsigned int difficulty) {
 }
 
 
-void main (void)
+/*void main (void)
 {
     uart_init();
     angry_nerds_game_init(); // start the angry nerds game!
     uart_putchar(EOT);
-}
+}*/

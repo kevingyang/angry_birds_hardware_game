@@ -10,7 +10,7 @@ Selena Sun, Kevin Yang, James Zheng
 ## Member contribution
 A short description of the work performed by each member of the team.
 Kevin: king shit
-James: king shit
+James: set up and programmed force-sensing resistor along with ADC, implemented/tested function for generating random target, various alterations to combine hardware with software
 Selena: sourced and assembled hardware (ie., making extension wires, designing integrated sensor system), designed/tested/implemented IMU processing sequence (with James's help!)
 
 ## References

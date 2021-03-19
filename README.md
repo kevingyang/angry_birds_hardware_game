@@ -1,12 +1,17 @@
 ## Project title
+Angry Nerds
 
 ## Team members
+Selena Sun, Kevin Yang, James Zheng
 
 ## Project description
 
+
 ## Member contribution
 A short description of the work performed by each member of the team.
-Selena: sourced and assembled hardware (making extension wires, designing integrated sensor system), designed + implemented IMU processing sequence.
+Kevin: king shit
+James: king shit
+Selena: sourced and assembled hardware (ie., making extension wires, designing integrated sensor system), designed/tested/implemented IMU processing sequence (with James's help!)
 
 ## References
 Cite any references/resources that inspired/influenced your project. 

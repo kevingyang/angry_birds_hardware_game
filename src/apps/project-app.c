@@ -10,11 +10,13 @@
 #include "spi.h"
 #include "project-app.h"
 #include "LSM6DS33.h"
+#include "i2c.h"
 
 #define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
 
 /* Reads angle from IMU */
 unsigned int read_angle(void) {
+
     short x, y, z;
     lsm6ds33_read_accelerometer(&x, &y, &z);
 
@@ -22,16 +24,20 @@ unsigned int read_angle(void) {
     if (z > 16000) {
         z = 16000;
     }
-    if (z < 16000) {
+    if (z < -16000) {
         z = -16000;
     }
     // convert to range of 0-32000
     z += 16000;
 
     // map to 0-180 degrees
-    z *= 180/32000;
+    z /= 178;
 
-    return z;
+    // find complementary angle
+    z = 90 - z;
+
+    printf("angle: %d\n", z);
+    return (unsigned int)z;
 }
 
 /* Reads values from force sensor through ADC */
@@ -44,7 +50,10 @@ unsigned int read_force(void) {   // channel 0
     tx[2] = 0; 
 
     spi_transfer(tx, rx, 3);
-    return ((rx[1] & 3) << 8) + rx[2];
+
+    unsigned int ans = ((rx[1] & 3) << 8) + rx[2];
+    printf("\nforce: %d\n", ans);
+    return ans;
 }
 
 /*
@@ -131,7 +140,7 @@ unsigned int gl_plot_image_trajectory(double force, double angle, char first_ini
 
         // virtual x and virtual y represent the actual values of x and y generated from the kinematics trajectory equation
         int virtual_x = (bird_position.x - 50) / x_scale_factor;
-        int virtual_y = (int) ((virtual_x * tan(angle) - CONST_G/(2 * velocity *velocity * cos(angle) * cos(angle)) * virtual_x * virtual_x)); // determine virtual y-position
+        int virtual_y = (int) ((virtual_x * tan(angle) - CONST_G/(2 * velocity * velocity * cos(angle) * cos(angle)) * virtual_x * virtual_x)); // determine virtual y-position
 
         // actual x position is already stored in position.x
         // convert virtual y to actual y position and store in position.y
@@ -185,8 +194,8 @@ void angry_nerds_graphics_init(void)
     SCREEN_WIDTH = 1400;
     SCREEN_HEIGHT = 900;
     GROUND_Y = SCREEN_HEIGHT - 50;
-    velocity_scale_factor = 250.0; // (TODO: change later, depending on the force value we get)
-    
+    velocity_scale_factor = 10.0;
+
     // 2. Calculate max height and width the bird can be launched to from kinematic principles.
     // maximum height results from maximum force (1.0) applied at 45 degree angle.
     int max_height = calc_max_height(1.0, deg_to_rad(45));
@@ -265,11 +274,11 @@ char select_random_fighter() {
  */
 void angry_nerds_game_init(void) {
     random_init();
+    lsm6ds33_init();
     keyboard_init(GPIO_PIN16, KEYBOARD_DATA);
     spi_init(SPI_CE0, 125000000);
     angry_nerds_graphics_init(); // must be initialized before graphics init (sets SCREEN_WIDTH and SCREEN_HEIGHT)
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);
-
     // Set background color
     gl_clear(GL_BLACK);
     gl_draw_string(50, SCREEN_HEIGHT/2, "Welcome to Angry Nerds!", GL_WHITE);
@@ -422,7 +431,9 @@ void angry_nerds_game_start(unsigned int difficulty) {
 
         // at end of 5 second countdown, call read_accel and read_force
         double force = read_force();
+        printf("after read_force()\n");
         double angle = read_angle();
+        printf("after read_angle()\n");
         
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
         gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target
@@ -456,7 +467,7 @@ void angry_nerds_game_start(unsigned int difficulty) {
 void main (void)
 {
     uart_init();
+    i2c_init();
     angry_nerds_game_init(); // start the angry nerds game!
-    printf("after game_init()\n");
     uart_putchar(EOT);
 }

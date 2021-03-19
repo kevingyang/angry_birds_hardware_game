@@ -458,6 +458,6 @@ void main (void)
     uart_init();
     printf("after uart_init()\n");
     angry_nerds_game_init(); // start the angry nerds game!
-    printf("after game_init()"\n);
+    printf("after game_init()\n");
     uart_putchar(EOT);
 }

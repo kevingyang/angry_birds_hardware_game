@@ -6,6 +6,7 @@
 
 ## Member contribution
 A short description of the work performed by each member of the team.
+Selena: sourced and assembled hardware (making extension wires, designing integrated sensor system), designed + implemented IMU processing sequence.
 
 ## References
 Cite any references/resources that inspired/influenced your project. 

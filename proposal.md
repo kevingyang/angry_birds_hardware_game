@@ -4,21 +4,20 @@
 Kevin G Yang    James Zheng    Selena Sun
 
 ## Project description
-Short description of the basic idea and end goal you are aiming for. 
-Include stretch goals and/or fallback position to indicate how you 
-might fine-tune the project scope if needed.
+Our project will be an arcade-like Angry Birds game, where the player uses a physical slingshot to control the trajectory of the bird and hit a target on screen! Depending on the angle and force with which the player pulls back the bird on the slingshot, the bird’s trajectory will be modified and plotted with the graphics library.
 
 ## Hardware, budget
-Itemize what hardware, if any, you need and your plan for acquiring it.
-Rough budget for the project. Remember we will reimburse you up to $20 per person.
+Adafruit LSM6DS33 6-DoF Accel + Gyro IMU
+CS107E IMU drivers
 
 ## Major tasks, member responsibilities
-Major task breakdown and who is responsible for each task.
+Kevin: Graphics for rendering trajectory of bird, game logic (determining whether the bird hits a target)
+James: Some of hardware assembly, some of graphics (target)
+Selena: Most of hardware assembly, ensure smooth interface with software
 
 ## Schedule, midpoint milestones
-What are the one-week goals you plan to meet for next week?
+We plan to have all of the hardware assembled and the basics graphics code written. From there, we'll optimize the graphics and ensure smooth interfacing between hardware and software components.
 
 ## Resources needed, issues
-Are there books/code/tools/materials that you need access to? 
-What are the possible risks to overcome? What are you concerned about? 
-How can we help you succeed?
+Guidance in potentially using the IMU to sense relative distance (between anchor point and sling point)
+

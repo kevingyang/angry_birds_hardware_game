@@ -22,7 +22,7 @@ unsigned int read_angle(void) {
     if (z > 16000) {
         z = 16000;
     }
-    if (z < 16000) {
+    if (z < -16000) {
         z = -16000;
     }
     // convert to range of 0-32000

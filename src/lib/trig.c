@@ -41,3 +41,8 @@ double deg_to_rad(int degrees)
 {
     return (double)(((double)degrees) * CONST_PI / 180);
 }
+
+double acosf(double x) {
+    double arcsin = x + (x*x*x) / (2*3) + (3 * x*x*x*x*x) / (2*4*5) + (3 * 5 * x*x*x*x*x*x*x) / (2*4*6*7) + (3 * 5 * 7 * x*x*x*x*x*x*x
+    return CONST_PI/2 - arcsin;
+}

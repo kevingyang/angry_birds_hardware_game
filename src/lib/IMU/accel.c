@@ -9,7 +9,6 @@
 
 void main(void) {
 
-    printf("ltart\n");
     timer_init();
 	uart_init();
 
@@ -27,6 +26,8 @@ void main(void) {
     printf("cos(0) = %d\n", (int)answer);
     answer = sin(0);
     printf("sin(0) = %d\n", (int)answer);
+    answer = acosf(0.5);
+    printf("acos(0.5) = %d\n", (int)answer);
 
 
 	while(1) { 

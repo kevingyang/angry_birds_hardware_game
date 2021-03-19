@@ -265,7 +265,7 @@ char select_random_fighter() {
  */
 void angry_nerds_game_init(void) {
     random_init();
-    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
+    keyboard_init(GPIO_PIN16, KEYBOARD_DATA);
     spi_init(SPI_CE0, 125000000);
     angry_nerds_graphics_init(); // must be initialized before graphics init (sets SCREEN_WIDTH and SCREEN_HEIGHT)
     gl_init(SCREEN_WIDTH, SCREEN_HEIGHT, GL_DOUBLEBUFFER);

@@ -5,8 +5,7 @@
 #include "printf.h"
 
 #include "LSM6DS33.h"
-#include "imuread.h"
-#include "project-app.h"
+//#include "project-app.h"
 
 void main(void) {
 
@@ -20,12 +19,13 @@ void main(void) {
     printf("whoami=%x\n", lsm6ds33_get_whoami());
 
     // test trig.h functions
+    /*
     double answer = cos(0);
     printf("cos(0) = %d\n", (int)answer);
     answer = sin(0);
     printf("sin(0) = %d\n", (int)answer);
     answer = acosf(0.5);
-    printf("acos(0.5) = %d\n", (int)answer);
+    printf("acos(0.5) = %d\n", (int)answer);*/
 
 	while(1) { 
         short x, y, z;
@@ -39,9 +39,10 @@ void main(void) {
         x /= 16;
         printf("accel=(%dmg,%dmg,%dmg)\n", x, y, z);
         
+        /*
         unsigned int j = read_angle();
         printf("angle = %d\n", j);
-        printf("here");
+        printf("here");*/
 
 //        fusion_update(accel_ptr, NULL, gyro_ptr, NULL);
 //        printf("new accel=(%dmg,%dmg,%dmg)\n\n", (int)accel_ptr->Gp[0], (int)accel_ptr->Gp[1], (int)accel_ptr->Gp[2]);

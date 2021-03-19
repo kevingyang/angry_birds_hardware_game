@@ -10,7 +10,6 @@
 #include "spi.h"
 #include "project-app.h"
 #include "LSM6DS33.h"
-#include "imuread.h"
 
 #define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
 
@@ -18,6 +17,7 @@
 unsigned int read_angle(void) {
     short x, y, z;
     lsm6ds33_read_accelerometer(&x, &y, &z);
+
     // scale z
     if (z > 16000) {
         z = 16000;
@@ -25,8 +25,13 @@ unsigned int read_angle(void) {
     if (z < 16000) {
         z = -16000;
     }
-    z /= 16000;
-    return deg_to_rad(acosf(z));
+    // convert to range of 0-32000
+    z += 16000;
+
+    // map to 0-180 degrees
+    z *= 180/32000;
+
+    return z;
 }
 
 /* Reads values from force sensor through ADC */
@@ -417,7 +422,7 @@ void angry_nerds_game_start(unsigned int difficulty) {
 
         // at end of 5 second countdown, call read_accel and read_force
         double force = read_force();
-        double angle = TEMP_READ_ANGLE();
+        double angle = read_angle();
         
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
         gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target
@@ -448,9 +453,9 @@ void angry_nerds_game_start(unsigned int difficulty) {
 }
 
 
-/*void main (void)
+void main (void)
 {
     uart_init();
     angry_nerds_game_init(); // start the angry nerds game!
     uart_putchar(EOT);
-}*/
+}

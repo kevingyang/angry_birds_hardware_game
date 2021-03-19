@@ -15,7 +15,6 @@
 double sin(double x);
 double cos(double x);
 double tan(double x);
-double acosf(double x);
 
 /* Converts an angle in degrees to radians. */
 double deg_to_rad(int degrees);

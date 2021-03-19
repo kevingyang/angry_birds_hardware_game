@@ -32,6 +32,8 @@ How well was your team able to execute on the plan in your proposal?
 Any trying or heroic moments you would like to share? Of what are you particularly proud: the effort you put into it? the end product? 
 the process you followed? what you learned along the way? Tell us about it!
 
+Overall, our team was able to accomplish our goal of replicating an Angry Birds-esque game using a real slingshot. Heroic moments include spending days on implementing an amazing suite of graphics functions (Kevin), setting up the slingshot and a majority of the hardware (Selena), and staying up the night before project presentations to integrate hardware with software (James and Selena). We were able to learn the difficulties that come with using sensors such as IMUs and force-sensing resistors, the difficulties that go into combining hardware with software, as well as the workflow of using Git and Github to code collaboratively.
+
 ## Photos
 You are encouraged to submit photos/videos of your project in action. 
 Add the files and commit to your project repository to include along with your submission.

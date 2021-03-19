@@ -48,6 +48,7 @@ void gl_draw_image(unsigned int x, unsigned int y, char first_initial);
 unsigned int gl_plot_image_trajectory(double force, double angle, char first_initial);
 void gl_draw_target(unsigned int leftBound, unsigned int size);
 unsigned int read_force(void);
+unsigned int read_angle(void);
 
 void angry_nerds_graphics_init(void);
 void angry_nerds_game_init(void);

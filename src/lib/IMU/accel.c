@@ -1,30 +1,33 @@
 #include "timer.h"
 #include "uart.h"
 #include "i2c.h"
-//#include "printf.h"
+#include "trig.h"
+#include "printf.h"
 
 #include "LSM6DS33.h"
 #include "imuread.h"
 
-static short p, q, r; //accelerometer values
-
 void main(void) {
 
+    printf("ltart\n");
     timer_init();
 	uart_init();
 
     i2c_init();
 	lsm6ds33_init();
-    fusion_init();
+//    fusion_init();
 
     printf("whoami=%x\n", lsm6ds33_get_whoami());
 
     AccelSensor_t accel;
     GyroSensor_t gyro;
 
-    float A[3][3] = {{1,2,3}, {4,5,6}, {7, 8, 9}};
-    float ans = f3x3matrixDetA(A);
-    printf("matrix ans = 0: %f\n", ans);
+    // test trig.h functions
+    double answer = cos(0);
+    printf("cos(0) = %d\n", (int)answer);
+    answer = sin(0);
+    printf("sin(0) = %d\n", (int)answer);
+
 
 	while(1) { 
         short x, y, z;
@@ -48,8 +51,8 @@ void main(void) {
         gyro.Yp[2] = c;
         const GyroSensor_t *gyro_ptr = &gyro;
 
-        fusion_update(accel_ptr, NULL, gyro_ptr, NULL);
-        printf("new accel=(%dmg,%dmg,%dmg)\n\n", (int)accel_ptr->Gp[0], (int)accel_ptr->Gp[1], (int)accel_ptr->Gp[2]);
+//        fusion_update(accel_ptr, NULL, gyro_ptr, NULL);
+//        printf("new accel=(%dmg,%dmg,%dmg)\n\n", (int)accel_ptr->Gp[0], (int)accel_ptr->Gp[1], (int)accel_ptr->Gp[2]);
 
         //MahonyAHRSupdateIMU(a, b, c, x, y, z);
         //printf("corrr=(%dmg,%dmg,%dmg)\n\n", a, b, c);

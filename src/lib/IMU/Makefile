@@ -1,5 +1,5 @@
 NAME = accel
-MODULES = LSM6DS33.o matrix.o fusion.o
+MODULES = LSM6DS33.o trig.o
 
 CFLAGS = -I$(CS107E)/include -g -Wall -Og -std=c99 -ffreestanding
 LDFLAGS = -nostdlib -T memmap -L$(CS107E)/lib

@@ -476,7 +476,7 @@ float sinf(float x)
  */
 float acosf(float x) {
     float arcsin = x + (x*x*x) / (2*3) + (3 * x*x*x*x*x) / (2*4*5) + (3 * 5 * x*x*x*x*x*x*x) / (2*4*6*7) + (3 * 5 * 7 * x*x*x*x*x*x*x*x*x) / (2*4*6*8*9);
-   return CONST_PI/2 - arcsin;
+    return CONST_PI/2 - arcsin;
 }
 
 /*

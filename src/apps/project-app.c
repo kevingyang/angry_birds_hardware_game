@@ -18,6 +18,15 @@
 unsigned int read_angle(void) {
     short x, y, z;
     lsm6ds33_read_accelerometer(&x, &y, &z);
+    
+    //SCALE Z
+    if (z > 16000) {
+        z = 16000;
+    } else if (z < -16000) {
+        z = -16000;
+    }
+    z/= 16000;
+
     return deg_to_rad(acosf(z));
 }
 

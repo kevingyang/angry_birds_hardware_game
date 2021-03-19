@@ -6,6 +6,7 @@
 
 #include "LSM6DS33.h"
 #include "imuread.h"
+#include "project-app.h"
 
 void main(void) {
 
@@ -18,9 +19,6 @@ void main(void) {
 
     printf("whoami=%x\n", lsm6ds33_get_whoami());
 
-    AccelSensor_t accel;
-    GyroSensor_t gyro;
-
     // test trig.h functions
     double answer = cos(0);
     printf("cos(0) = %d\n", (int)answer);
@@ -28,7 +26,6 @@ void main(void) {
     printf("sin(0) = %d\n", (int)answer);
     answer = acosf(0.5);
     printf("acos(0.5) = %d\n", (int)answer);
-
 
 	while(1) { 
         short x, y, z;
@@ -41,16 +38,10 @@ void main(void) {
         y /= 16;
         x /= 16;
         printf("accel=(%dmg,%dmg,%dmg)\n", x, y, z);
-
-        accel.Gp[0] = x;
-        accel.Gp[1] = y;
-        accel.Gp[2] = z;
-        const AccelSensor_t *accel_ptr = &accel;
-
-        gyro.Yp[0] = a;
-        gyro.Yp[1] = b;
-        gyro.Yp[2] = c;
-        const GyroSensor_t *gyro_ptr = &gyro;
+        
+        unsigned int j = read_angle();
+        printf("angle = %d\n", j);
+        printf("here");
 
 //        fusion_update(accel_ptr, NULL, gyro_ptr, NULL);
 //        printf("new accel=(%dmg,%dmg,%dmg)\n\n", (int)accel_ptr->Gp[0], (int)accel_ptr->Gp[1], (int)accel_ptr->Gp[2]);

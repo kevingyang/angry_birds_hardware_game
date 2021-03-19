@@ -23,6 +23,10 @@ someone else's code or circuit into your project, be sure to clearly
 delineate what portion of the work was derivative and what portion is 
 your original work.
 
+For our cosine function, we used a simple approximation of cos(x) using a 6th-order Taylor polynomial.
+Citation: https://web.eecs.utk.edu/~azh/blog/cosine.html
+
+
 ## Self-evaluation
 How well was your team able to execute on the plan in your proposal?  
 Any trying or heroic moments you would like to share? Of what are you particularly proud: the effort you put into it? the end product? 

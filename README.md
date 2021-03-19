@@ -1,11 +1,11 @@
 ## Project title
-Angry Nerds
+Angry Nerds!
 
 ## Team members
 Selena Sun, Kevin Yang, James Zheng
 
 ## Project description
-Our project will be an arcade-like Angry Birds game, where the player uses a physical slingshot to control the force and trajectory of the bird and hit a target on screen! Depending on the angle and force with which the player pulls back the bird on the slingshot, as measured by an inertial measurement unit and a force-sensing resistor, the bird’s trajectory will be modified and plotted with the graphics library.
+Our project is an arcade-like Angry Birds game, where the player uses a physical slingshot to control the force and trajectory of the bird (in this case, the wonderful TAs and instructors of our class) and hit a target on screen! Depending on the angle and force with which the player pulls back the bird on the slingshot, as measured by an inertial measurement unit and a force-sensing resistor, the bird’s trajectory is modified and plotted with the graphics library.
 
 ## Member contribution
 A short description of the work performed by each member of the team.

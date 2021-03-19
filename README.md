@@ -10,7 +10,7 @@ Selena Sun, Kevin Yang, James Zheng
 ## Member contribution
 A short description of the work performed by each member of the team.
 
-Kevin: set up graphics (plotting trajectory on-screen with force and angle measurements and drawing images of staff members on-screen), set up game logic (with countdown, keyboard, graphics, and difficulty selection components)
+Kevin: set up graphics (plotting trajectory on-screen with force and angle measurements with kinematics and drawing images of staff members on-screen), set up game logic (with countdown, keyboard, graphics, and difficulty selection components)
 
 James: set up and programmed force-sensing resistor along with ADC, implemented/tested function for generating random target, various alterations to combine hardware with software
 

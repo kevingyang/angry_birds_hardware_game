@@ -35,11 +35,9 @@ double tan(double x)
 }
 
 /*
- * Converts radians to degrees.
+ * Converts degrees to radians.
  */
 double deg_to_rad(int degrees) 
 {
     return (double)(((double)degrees) * CONST_PI / 180);
 }
-
-//FUCK TRIG

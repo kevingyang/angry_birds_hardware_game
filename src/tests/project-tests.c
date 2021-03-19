@@ -89,7 +89,7 @@ void test_force_sensor(void) {
     }
 }
 
-void main(void)
+/* void main(void)
 {
     uart_init();
     angry_nerds_graphics_init();
@@ -97,17 +97,17 @@ void main(void)
     gl_plot_ground(GROUND_Y);
     random_init();
 
-    /* TESTS BELOW */
+     TESTS BELOW 
 //    test_draw_images();
 //    test_trajectory_different_angles();
 //    test_trajectory_different_forces();
 //    test_plot_image_trajectory();
 //    test_gl_draw_target();
     test_force_sensor();
-    /* TESTS ABOVE */
+    TESTS ABOVE
 
     // Final step: buffer with drawn contents
     gl_swap_buffer();
 
     uart_putchar(EOT);
-}
+}*/

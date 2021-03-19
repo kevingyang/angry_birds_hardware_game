@@ -5,7 +5,7 @@ Angry Nerds
 Selena Sun, Kevin Yang, James Zheng
 
 ## Project description
-
+Our project will be an arcade-like Angry Birds game, where the player uses a physical slingshot to control the force and trajectory of the bird and hit a target on screen! Depending on the angle and force with which the player pulls back the bird on the slingshot, as measured by an inertial measurement unit and a force-sensing resistor, the bird’s trajectory will be modified and plotted with the graphics library.
 
 ## Member contribution
 A short description of the work performed by each member of the team.
@@ -37,3 +37,9 @@ workflow of using Git and Github to code collaboratively.
 ## Photos
 You are encouraged to submit photos/videos of your project in action. 
 Add the files and commit to your project repository to include along with your submission.
+
+![displaying images of instructors](https://user-images.githubusercontent.com/6740161/111840331-d7788e80-88c1-11eb-9910-7cf0d0d1def9.jpg)
+![image buffer issues](https://user-images.githubusercontent.com/6740161/111840340-dc3d4280-88c1-11eb-8f1b-339be8f88e5c.jpg)
+![image buffer images 2](https://user-images.githubusercontent.com/6740161/111840349-df383300-88c1-11eb-9a05-cab50b7acec9.jpg)
+
+

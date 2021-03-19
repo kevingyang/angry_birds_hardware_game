@@ -15,7 +15,7 @@
 #define LINE_HEIGHT (gl_get_char_height() + 5) // line spacing of 5 px
 
 /* Reads angle from IMU */
-unsigned int read_angle(void) {
+double read_angle(void) {
 
     short x, y, z;
     lsm6ds33_read_accelerometer(&x, &y, &z);
@@ -36,13 +36,11 @@ unsigned int read_angle(void) {
     // find complementary angle
     z = 90 - z;
 
-    z = (unsigned int) deg_to_rad(z);
-    printf("angle: %d\n", z);
-    return z;
+    return deg_to_rad((unsigned int)z);
 }
 
 /* Reads values from force sensor through ADC */
-unsigned int read_force(void) {   // channel 0
+double read_force(void) {   // channel 0
     unsigned char tx[3];// = {1, 0x80, 0};
     unsigned char rx[3];
 
@@ -54,7 +52,7 @@ unsigned int read_force(void) {   // channel 0
 
     unsigned int ans = ((rx[1] & 3) << 8) + rx[2];
     printf("\nforce: %d\n", ans);
-    return ans;
+    return (double)ans;
 }
 
 /*
@@ -437,8 +435,8 @@ void angry_nerds_game_start(unsigned int difficulty) {
         force /= 2000;
         force += 0.9;
 
-        printf("after read_force()\n");
-        printf("after read_angle()\n");
+        printf("after read_force(): %d\n", (int)(force * 100));
+        printf("after read_angle(): %d\n", (int)(angle * 100));
 
         gl_plot_ground(GROUND_Y); // plot ground on both framebuffers
         gl_draw_target(SCREEN_WIDTH / 2, set_target_size(difficulty)); // plot target

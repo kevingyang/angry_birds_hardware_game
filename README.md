@@ -54,3 +54,12 @@ Sort-of working images of instructors -- sorry Peter and Liana!
 
 Top-down hardware setup:
 <img width="582" alt="Top-down hardware setup" src="https://user-images.githubusercontent.com/24970641/111859960-b20b7500-8901-11eb-82be-eb0941a2dbae.jpeg">
+
+Side view hardware setup:
+<img width="989" alt="sidehardwaresetup" src="https://user-images.githubusercontent.com/24970641/111860780-2563b580-8907-11eb-937a-6ba1aab4fb54.png">
+
+Force sensor placement:
+<img width="570" alt="forcesensorplacement" src="https://user-images.githubusercontent.com/24970641/111860815-5643ea80-8907-11eb-8180-b4ae2545b27a.png">
+
+Wire slipped out :(
+<img width="2100" alt="wireslippedoutat3AM" src="https://user-images.githubusercontent.com/24970641/111860835-6cea4180-8907-11eb-9241-df99749beb66.jpg">

@@ -61,5 +61,5 @@ Side view hardware setup:
 Force sensor placement:
 <img width="570" alt="forcesensorplacement" src="https://user-images.githubusercontent.com/24970641/111860815-5643ea80-8907-11eb-8180-b4ae2545b27a.png">
 
-Wire slipped out :(
+Wire slipped out (a common sight) :(
 <img width="2100" alt="wireslippedoutat3AM" src="https://user-images.githubusercontent.com/24970641/111860835-6cea4180-8907-11eb-9241-df99749beb66.jpg">

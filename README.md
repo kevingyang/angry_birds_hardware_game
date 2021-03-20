@@ -51,3 +51,6 @@ Issues with loading the image buffer:
 
 Sort-of working images of instructors -- sorry Peter and Liana!
 <img width="406" alt="displaying images of instructors" src="https://user-images.githubusercontent.com/6740161/111843300-88812800-88c6-11eb-83ac-c32a9cfcdf36.png">
+
+Top-down hardware setup:
+<img width="582" alt="Top-down hardware setup" src="https://user-images.githubusercontent.com/24970641/111859960-b20b7500-8901-11eb-82be-eb0941a2dbae.jpeg">

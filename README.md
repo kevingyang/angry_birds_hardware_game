@@ -1,8 +1,4 @@
-## Project title
-Angry Nerds!
-
-## Team members
-Selena Sun, Kevin Yang, James Zheng
+## Angry Nerds - CS 107E Final Project
 
 ## Project description
 Our project is an arcade-like Angry Birds game, where the player uses a physical slingshot to control the force and trajectory of the bird (in this case, the wonderful TAs and instructors of our class) and hit a target on screen! Depending on the angle and force with which the player pulls back the bird on the slingshot, as measured by an inertial measurement unit and a force-sensing resistor, the bird’s trajectory is modified and plotted with the graphics library.
@@ -14,6 +10,10 @@ Kevin: set up graphics (plotting trajectory on-screen with force and angle measu
 James: set up and programmed force-sensing resistor along with ADC, implemented/tested function for generating random target, various alterations to combine hardware with software
 
 Selena: sourced and assembled hardware (ie., making extension wires, designing integrated sensor system), designed/tested/implemented IMU processing sequence (with James's help!)
+
+
+## Team members
+Selena Sun, Kevin Yang, James Zheng
 
 ## References
 Cite any references/resources that inspired/influenced your project. 
